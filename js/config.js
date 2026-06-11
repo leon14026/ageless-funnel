@@ -23,10 +23,9 @@ const CONFIG = {
     TURNSTILE_SITE_KEY: '',
 
     // Manual pre-order payment details shown on the checkout page (preorder mode).
-    // TODO(owner): fill in real numbers before launch.
+    // bKash only for the beta (no bank transfer yet).
     PAYMENT: {
-        BKASH_NUMBER: '01XXXXXXXXX',
-        BANK_DETAILS: 'Bank: [bank name] · A/C name: [name] · A/C no: [number] · Branch: [branch]'
+        BKASH_NUMBER: '01727217767'
     },
 
     // Application Settings

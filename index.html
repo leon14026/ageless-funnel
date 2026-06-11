@@ -2183,10 +2183,6 @@
                                     <span style="font-weight: 700;">bKash</span>
                                 </label>
                                 <label class="f-preorder-method" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.125rem; border: 2px solid var(--color-border-light); border-radius: var(--radius-md); cursor: pointer;">
-                                    <input type="radio" name="preorderMethod" value="bank" style="width: 18px; height: 18px; accent-color: var(--color-primary);">
-                                    <span style="font-weight: 700;">Bank transfer</span>
-                                </label>
-                                <label class="f-preorder-method" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.125rem; border: 2px solid var(--color-border-light); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="radio" name="preorderMethod" value="card" style="width: 18px; height: 18px; accent-color: var(--color-primary);">
                                     <span style="font-weight: 700;">Card / International <span class="f-small text-muted" style="font-weight: 400;">(opens at launch)</span></span>
                                 </label>
@@ -2195,16 +2191,13 @@
                             <div id="preorderInstr-bkash" class="f-preorder-instr f-small text-secondary" style="background: #fff; border: 1px solid var(--color-border-light); border-radius: var(--radius-md); padding: 0.875rem 1rem; margin-bottom: 1rem;">
                                 Send <strong id="preorderAmount">৳7,499</strong> via bKash <strong>Send Money</strong> to <strong id="bkashNumber">01XXXXXXXXX</strong>, then enter the Transaction ID (TrxID) below.
                             </div>
-                            <div id="preorderInstr-bank" class="f-preorder-instr f-small text-secondary" style="display: none; background: #fff; border: 1px solid var(--color-border-light); border-radius: var(--radius-md); padding: 0.875rem 1rem; margin-bottom: 1rem;">
-                                Transfer <strong class="preorderAmountBank">৳7,499</strong> to: <span id="bankDetails">[bank details]</span>. Then enter your transfer reference below.
-                            </div>
                             <div id="preorderInstr-card" class="f-preorder-instr f-small text-secondary" style="display: none; background: #fff; border: 1px solid var(--color-border-light); border-radius: var(--radius-md); padding: 0.875rem 1rem; margin-bottom: 1rem;">
                                 Card & international payments open at launch. Continue to join the free waitlist — we'll email you the moment card checkout is live.
                             </div>
 
                             <div class="f-form-group" id="preorderReferenceGroup">
-                                <label class="f-label" for="preorderReference">bKash / Bank Transaction Reference</label>
-                                <input type="text" id="preorderReference" class="f-input" placeholder="e.g. TrxID 9AB7CD2EF1">
+                                <label class="f-label" for="preorderReference">bKash Transaction ID (TrxID)</label>
+                                <input type="text" id="preorderReference" class="f-input" placeholder="e.g. 9AB7CD2EF1">
                             </div>
 
                             <label style="display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem; cursor: pointer;">
