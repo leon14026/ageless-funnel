@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Healthy Years Estimate | Ageless by Tulee</title>
+    <meta name="description" content="A population-based life expectancy and healthy years calculator for Bangladeshi women 40+, styled for Ageless by Tulee.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --color-primary: #3B1F2B;
+            --color-secondary: #9BB7A5;
+            --color-accent: #E9A7B5;
+            --color-light-bg: #FFF6F2;
+            --color-surface: #FFFFFF;
+            --color-text: #3B3B3B;
+            --color-text-secondary: #5A5A5A;
+            --color-text-muted: #8A8A8A;
+            --color-border: #E8E4DF;
+            --color-border-light: #F0ECE8;
+            --color-success: #16A34A;
+            --color-error: #EF4444;
+            --shadow-sm: 0 4px 16px rgba(59, 31, 43, 0.08);
+            --shadow-md: 0 14px 34px rgba(59, 31, 43, 0.12);
+            --radius-md: 12px;
+            --radius-lg: 18px;
+            --radius-full: 999px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Nunito', system-ui, sans-serif;
+            color: var(--color-text);
+            background:
+                radial-gradient(circle at top left, rgba(233, 167, 181, 0.22), transparent 34rem),
+                linear-gradient(180deg, #FFF6F2 0%, #F8F1EE 100%);
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        .le-page {
+            min-height: 100vh;
+        }
+
+        .le-nav {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 246, 242, 0.9);
+            backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(232, 228, 223, 0.85);
+        }
+
+        .le-nav-inner {
+            width: min(1120px, calc(100% - 2rem));
+            margin: 0 auto;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        .le-brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            color: var(--color-primary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .le-logo {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+            background: #fff;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .le-logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.14);
+        }
+
+        .le-back {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 42px;
+            padding: 0.7rem 1.1rem;
+            border: 1px solid var(--color-primary);
+            border-radius: var(--radius-full);
+            color: var(--color-primary);
+            font-size: 0.82rem;
+            font-weight: 800;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+        }
+
+        .le-wrap {
+            width: min(1240px, calc(100% - 2rem));
+            margin: 0 auto;
+            padding: 1.4rem 0 3rem;
+        }
+
+        .le-hero {
+            margin-bottom: 1.25rem;
+        }
+
+        .le-hero-copy,
+        .le-result-card {
+            border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md);
+        }
+
+        .le-hero-copy {
+            padding: clamp(1.25rem, 3vw, 2rem);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .le-label {
+            display: inline-flex;
+            margin-bottom: 0.9rem;
+            color: var(--color-primary);
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2,
+        h3 {
+            margin: 0;
+            font-family: 'Playfair Display', Georgia, serif;
+            color: var(--color-primary);
+            line-height: 1.05;
+        }
+
+        h1 {
+            max-width: 900px;
+            font-size: clamp(2.2rem, 5vw, 4.25rem);
+        }
+
+        .le-hero-copy p {
+            max-width: 980px;
+            margin: 0.9rem 0 0;
+            color: var(--color-text-secondary);
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+
+        .le-result-card {
+            display: grid;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            padding: clamp(1.2rem, 2.3vw, 1.65rem);
+            color: var(--color-text);
+            background: var(--color-surface);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .le-result-card h2 {
+            color: var(--color-primary);
+            font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+        }
+
+        .le-result-placeholder {
+            min-height: 240px;
+            display: grid;
+            place-items: center;
+            padding: 2rem;
+            text-align: center;
+            border: 1px dashed rgba(59, 31, 43, 0.24);
+            border-radius: var(--radius-lg);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(233, 167, 181, 0.24), transparent 42%),
+                var(--color-light-bg);
+        }
+
+        .le-placeholder-inner {
+            max-width: 360px;
+        }
+
+        .le-placeholder-orb {
+            width: 76px;
+            height: 76px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            border-radius: 50%;
+            color: var(--color-primary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.35rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, rgba(233, 167, 181, 0.42), rgba(155, 183, 165, 0.3));
+            box-shadow: var(--shadow-sm);
+        }
+
+        .le-result-placeholder p {
+            margin: 0;
+            color: var(--color-primary);
+            font-size: 1.1rem;
+            font-weight: 900;
+            line-height: 1.45;
+        }
+
+        .le-result-placeholder small {
+            display: block;
+            margin-top: 0.55rem;
+            color: var(--color-text-secondary);
+            line-height: 1.55;
+        }
+
+        .le-result-card.is-revealed .le-result-placeholder,
+        .le-result-reveal[hidden] {
+            display: none;
+        }
+
+        .le-result-reveal {
+            display: grid;
+            gap: 1rem;
+        }
+
+        .le-estimate-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(140px, 0.48fr) minmax(0, 1fr);
+            gap: 0.9rem;
+            align-items: stretch;
+        }
+
+        .le-estimate-card {
+            padding: 1rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-lg);
+            background:
+                radial-gradient(circle at 92% 0%, rgba(233, 167, 181, 0.2), transparent 32%),
+                var(--color-light-bg);
+        }
+
+        .le-estimate-kicker {
+            display: block;
+            margin-bottom: 0.8rem;
+            color: var(--color-primary);
+            font-size: 0.75rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .le-gain-bridge {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.3rem;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid rgba(155, 183, 165, 0.42);
+            border-radius: var(--radius-lg);
+            background:
+                radial-gradient(circle at 50% 0%, rgba(233, 167, 181, 0.32), transparent 46%),
+                linear-gradient(180deg, rgba(155, 183, 165, 0.24), rgba(255, 246, 242, 0.86));
+        }
+
+        .le-gain-bridge span {
+            color: var(--color-text-secondary);
+            font-size: 0.74rem;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+
+        .le-gain-bridge strong {
+            color: var(--color-primary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2.3rem, 4.8vw, 4rem);
+            line-height: 0.95;
+        }
+
+        .le-gain-bridge small {
+            color: var(--color-text-secondary);
+            font-size: 0.84rem;
+            font-weight: 800;
+        }
+
+        .le-result-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0.65rem;
+        }
+
+        .le-metric {
+            padding: 0.8rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .le-metric span {
+            display: block;
+            color: var(--color-text-muted);
+            font-size: 0.8rem;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .le-metric strong {
+            display: block;
+            margin-top: 0.35rem;
+            color: var(--color-primary);
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(2.15rem, 4vw, 3.25rem);
+            line-height: 0.95;
+        }
+
+        .le-metric.is-warning {
+            border-color: rgba(239, 68, 68, 0.28);
+            background: rgba(239, 68, 68, 0.08);
+        }
+
+        .le-metric.is-warning strong {
+            display: inline-flex;
+            padding: 0.22rem 0.62rem 0.28rem;
+            color: #fff;
+            background: var(--color-error);
+            border-radius: var(--radius-full);
+            box-shadow: 0 12px 28px rgba(239, 68, 68, 0.22);
+        }
+
+        .le-metric.is-strong {
+            border-color: rgba(22, 163, 74, 0.38);
+            background: rgba(22, 163, 74, 0.16);
+        }
+
+        .le-metric.is-strong strong {
+            display: inline-flex;
+            padding: 0.22rem 0.62rem 0.28rem;
+            color: #fff;
+            background: var(--color-success);
+            border-radius: var(--radius-full);
+            box-shadow: 0 12px 28px rgba(22, 163, 74, 0.24);
+        }
+
+        .le-metric small {
+            display: block;
+            margin-top: 0.25rem;
+            color: var(--color-text-secondary);
+            font-size: 0.82rem;
+        }
+
+        .le-note {
+            margin: 0;
+            color: var(--color-text-secondary);
+            font-size: 0.84rem;
+            line-height: 1.6;
+        }
+
+        .le-note strong {
+            color: var(--color-primary);
+            font-weight: 900;
+        }
+
+        .le-main {
+            display: block;
+        }
+
+        .le-form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1.25rem;
+            align-items: start;
+        }
+
+        .le-panel {
+            padding: 1.35rem;
+            border: 1px solid var(--color-border-light);
+            border-radius: var(--radius-lg);
+            background: var(--color-surface);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .le-panel-current {
+            border-color: rgba(233, 167, 181, 0.42);
+            box-shadow: inset 4px 0 0 rgba(233, 167, 181, 0.5), var(--shadow-sm);
+        }
+
+        .le-panel-target {
+            border-color: rgba(155, 183, 165, 0.5);
+            box-shadow: inset 4px 0 0 rgba(155, 183, 165, 0.72), var(--shadow-sm);
+        }
+
+        .le-panel-heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .le-panel-title {
+            margin-bottom: 0;
+            color: var(--color-primary);
+            font-size: 0.78rem;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .le-mode-badge {
+            display: inline-flex;
+            flex: 0 0 auto;
+            align-items: center;
+            min-height: 28px;
+            padding: 0.28rem 0.68rem;
+            border-radius: var(--radius-full);
+            color: var(--color-primary);
+            background: rgba(233, 167, 181, 0.22);
+            font-size: 0.68rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        .le-panel-target .le-mode-badge {
+            background: rgba(155, 183, 165, 0.28);
+        }
+
+        .le-field {
+            margin-bottom: 0.95rem;
+        }
+
+        .le-field:last-child {
+            margin-bottom: 0;
+        }
+
+        .le-field-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 0.4rem;
+        }
+
+        .le-field label {
+            color: var(--color-text);
+            font-weight: 800;
+        }
+
+        .le-field output {
+            color: var(--color-primary);
+            font-weight: 900;
+        }
+
+        .le-sub {
+            margin: -0.15rem 0 0.45rem;
+            color: var(--color-text-muted);
+            font-size: 0.84rem;
+            line-height: 1.45;
+        }
+
+        .le-field-note {
+            margin: 0.35rem 0 0;
+            color: var(--color-text-muted);
+            font-size: 0.78rem;
+            line-height: 1.4;
+        }
+
+        .le-field-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.6rem;
+            margin-top: 0.45rem;
+        }
+
+        .le-sync-note {
+            margin: 0;
+            color: var(--color-text-muted);
+            font-size: 0.78rem;
+            font-weight: 800;
+            line-height: 1.4;
+        }
+
+        .le-sync-note.is-synced {
+            color: var(--color-success);
+        }
+
+        .le-sync-note.is-independent {
+            color: var(--color-primary);
+        }
+
+        .le-reset-target {
+            padding: 0.34rem 0.72rem;
+            border: 1px solid rgba(59, 31, 43, 0.18);
+            border-radius: var(--radius-full);
+            background: #fff;
+            color: var(--color-primary);
+            cursor: pointer;
+            font-size: 0.74rem;
+            font-weight: 900;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+
+        .le-reset-target:hover,
+        .le-reset-target:focus-visible {
+            border-color: var(--color-primary);
+            background: var(--color-light-bg);
+        }
+
+        .le-range {
+            width: 100%;
+            accent-color: var(--color-primary);
+        }
+
+        .le-range-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.1rem;
+            color: var(--color-text-muted);
+            font-size: 0.76rem;
+        }
+
+        .le-grid-two {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .le-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .le-pill {
+            min-height: 38px;
+            padding: 0.45rem 0.85rem;
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-full);
+            background: transparent;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 800;
+            transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        .le-pill.is-active {
+            border-color: var(--color-primary);
+            background: var(--color-primary);
+            color: #fff;
+        }
+
+        .le-bmi {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 0.65rem;
+            margin-top: -0.35rem;
+            color: var(--color-text-secondary);
+            font-size: 0.94rem;
+        }
+
+        .le-bmi-badge {
+            padding: 0.2rem 0.65rem;
+            border-radius: var(--radius-full);
+            color: var(--color-primary);
+            background: rgba(233, 167, 181, 0.22);
+            font-weight: 900;
+        }
+
+        .le-projection {
+            display: grid;
+            gap: 0.8rem;
+            padding: 1.2rem;
+            border-radius: var(--radius-lg);
+            background: var(--color-light-bg);
+            border: 1px solid var(--color-border-light);
+        }
+
+        .le-gain-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            color: var(--color-text-secondary);
+            font-size: 0.94rem;
+        }
+
+        .le-gain-row strong {
+            padding: 0.25rem 0.65rem;
+            border-radius: var(--radius-full);
+            background: rgba(155, 183, 165, 0.24);
+            color: var(--color-primary);
+            white-space: nowrap;
+        }
+
+        .le-page:not(.has-calculated) .le-delayed-value {
+            visibility: hidden;
+        }
+
+        .le-calc-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .le-calculate-btn {
+            min-height: 56px;
+            padding: 0.95rem 1.75rem;
+            border: 2px solid var(--color-primary);
+            border-radius: var(--radius-full);
+            background: var(--color-primary);
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            box-shadow: 0 16px 34px rgba(59, 31, 43, 0.22);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .le-calculate-btn:hover,
+        .le-calculate-btn:focus-visible {
+            background: #4F2A3A;
+            box-shadow: 0 20px 42px rgba(59, 31, 43, 0.28);
+            transform: translateY(-2px);
+        }
+
+        .le-source-note {
+            max-width: 980px;
+            margin: 1rem auto 0;
+            color: var(--color-text-muted);
+            font-size: 0.82rem;
+            line-height: 1.65;
+            text-align: center;
+        }
+
+        @media (max-width: 860px) {
+            .le-estimate-grid,
+            .le-form-grid,
+            .le-grid-two {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 560px) {
+            .le-nav-inner {
+                min-height: 66px;
+            }
+
+            .le-brand {
+                font-size: 1rem;
+            }
+
+            .le-back {
+                padding: 0.65rem 0.8rem;
+                font-size: 0.72rem;
+            }
+
+            .le-wrap {
+                width: min(100% - 1rem, 1120px);
+                padding-top: 1rem;
+            }
+
+            .le-result-card,
+            .le-estimate-card,
+            .le-panel {
+                padding: 1rem;
+            }
+
+            .le-panel-heading {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .le-result-placeholder {
+                min-height: 240px;
+                padding: 1.25rem;
+            }
+
+            .le-calculate-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="le-page" id="lePage">
+        <nav class="le-nav" aria-label="Calculator navigation">
+            <div class="le-nav-inner">
+                <a class="le-brand" href="index.html#/">
+                    <span class="le-logo"><img src="images/Logo_without_text.png" alt="Ageless by Tulee logo"></span>
+                    Ageless by Tulee
+                </a>
+                <a class="le-back" href="index.html#/">Back to Home Page</a>
+            </div>
+        </nav>
+
+        <main class="le-wrap">
+            <section class="le-hero" aria-labelledby="le-title">
+                <div class="le-hero-copy">
+                    <span class="le-label">Longevity Check</span>
+                    <h1 id="le-title">Your Healthy Years Estimate</h1>
+                    <p>This simple calculator helps Bangladeshi women 40+ understand how lifestyle, health, movement, and nutrition may influence long-term wellbeing. It is not a diagnosis, but it can show where small changes may matter.</p>
+                </div>
+            </section>
+
+            <section class="le-main">
+                <div class="le-form-grid">
+                    <section class="le-panel le-panel-current" aria-labelledby="about-you-title">
+                        <div class="le-panel-heading">
+                            <div class="le-panel-title" id="about-you-title">About You</div>
+                            <span class="le-mode-badge">Current / Today</span>
+                        </div>
+                        <div class="le-field">
+                            <div class="le-field-head">
+                                <label for="leAge">Age</label>
+                                <output id="ageOutput" for="leAge">35 years</output>
+                            </div>
+                            <input class="le-range" type="range" id="leAge" min="18" max="70" value="35">
+                            <div class="le-range-labels"><span>18</span><span>70</span></div>
+                        </div>
+                        <div class="le-grid-two">
+                            <div class="le-field">
+                                <div class="le-field-head">
+                                    <label for="leHeight">Height</label>
+                                    <output id="heightOutput" for="leHeight">155 cm</output>
+                                </div>
+                                <input class="le-range" type="range" id="leHeight" min="140" max="180" value="155">
+                            </div>
+                            <div class="le-field">
+                                <div class="le-field-head">
+                                    <label for="leWeight">Current weight</label>
+                                    <output id="weightOutput" for="leWeight">55 kg</output>
+                                </div>
+                                <input class="le-range" type="range" id="leWeight" min="35" max="100" value="55">
+                                <p class="le-field-note">Used for today's estimate.</p>
+                            </div>
+                        </div>
+                        <div class="le-bmi">
+                            <span>BMI: <strong id="bmiValue">--</strong></span>
+                            <span class="le-bmi-badge" id="bmiCategory">--</span>
+                        </div>
+                        <div class="le-field">
+                            <label>Where do you live?</label>
+                            <div class="le-pills" data-field="location">
+                                <button class="le-pill" type="button" data-value="rural">Rural</button>
+                                <button class="le-pill" type="button" data-value="urban">Urban / town</button>
+                            </div>
+                        </div>
+                        <div class="le-field">
+                            <label>Highest education level</label>
+                            <div class="le-pills" data-field="education">
+                                <button class="le-pill" type="button" data-value="none_primary">Primary or less</button>
+                                <button class="le-pill" type="button" data-value="secondary">Secondary school</button>
+                                <button class="le-pill" type="button" data-value="higher">University / college</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="le-panel le-panel-current" aria-labelledby="health-title">
+                        <div class="le-panel-heading">
+                            <div class="le-panel-title" id="health-title">Your Health</div>
+                            <span class="le-mode-badge">Current / Today</span>
+                        </div>
+                        <div class="le-field">
+                            <label>How would you rate your overall health?</label>
+                            <p class="le-sub">Your own feeling about your health matters in population studies. Choose the answer that feels honest today.</p>
+                            <div class="le-pills" data-field="srh">
+                                <button class="le-pill" type="button" data-value="excellent">Excellent</button>
+                                <button class="le-pill" type="button" data-value="good">Good</button>
+                                <button class="le-pill" type="button" data-value="fair">Fair</button>
+                                <button class="le-pill" type="button" data-value="poor">Poor</button>
+                            </div>
+                        </div>
+                        <div class="le-grid-two">
+                            <div class="le-field">
+                                <label>Diagnosed diabetes?</label>
+                                <div class="le-pills" data-field="diabetes">
+                                    <button class="le-pill" type="button" data-value="no">No</button>
+                                    <button class="le-pill" type="button" data-value="yes">Yes</button>
+                                </div>
+                            </div>
+                            <div class="le-field">
+                                <label>High blood pressure?</label>
+                                <div class="le-pills" data-field="hypertension">
+                                    <button class="le-pill" type="button" data-value="no">No</button>
+                                    <button class="le-pill" type="button" data-value="yes">Yes</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="le-field">
+                            <label>Tobacco use</label>
+                            <p class="le-sub">Cigarettes, bidi, paan, gutka, or any regular tobacco form.</p>
+                            <div class="le-pills" data-field="tobacco">
+                                <button class="le-pill" type="button" data-value="never">Never</button>
+                                <button class="le-pill" type="button" data-value="sometimes">Sometimes</button>
+                                <button class="le-pill" type="button" data-value="daily">Daily</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="le-panel le-panel-current" aria-labelledby="lifestyle-title">
+                        <div class="le-panel-heading">
+                            <div class="le-panel-title" id="lifestyle-title">Current Lifestyle</div>
+                            <span class="le-mode-badge">Current / Today</span>
+                        </div>
+                        <p class="le-sub">These describe your life today.</p>
+                        <div class="le-field">
+                            <label>Physical activity</label>
+                            <p class="le-sub">Choose the option closest to your routine, not counting housework alone.</p>
+                            <div class="le-pills" data-field="activity">
+                                <button class="le-pill" type="button" data-value="sedentary">Mostly sitting</button>
+                                <button class="le-pill" type="button" data-value="light">Light</button>
+                                <button class="le-pill" type="button" data-value="moderate">Moderate</button>
+                                <button class="le-pill" type="button" data-value="active">Very active</button>
+                            </div>
+                        </div>
+                        <div class="le-field">
+                            <label>Diet quality</label>
+                            <div class="le-pills" data-field="diet">
+                                <button class="le-pill" type="button" data-value="poor">Poor</button>
+                                <button class="le-pill" type="button" data-value="fair">Fair</button>
+                                <button class="le-pill" type="button" data-value="good">Good</button>
+                                <button class="le-pill" type="button" data-value="excellent">Excellent</button>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="le-panel le-panel-target" aria-labelledby="what-if-title">
+                        <div class="le-panel-heading">
+                            <div class="le-panel-title" id="what-if-title">Plan Your Upgrade</div>
+                            <span class="le-mode-badge">Target / Future</span>
+                        </div>
+                        <p class="le-sub">These are future goals, not your current status.</p>
+                        <div class="le-field">
+                            <label>If you start moving more</label>
+                            <div class="le-pills" data-field="tActivity">
+                                <button class="le-pill" type="button" data-value="sedentary">Mostly sitting</button>
+                                <button class="le-pill" type="button" data-value="light">Light</button>
+                                <button class="le-pill" type="button" data-value="moderate">Moderate</button>
+                                <button class="le-pill" type="button" data-value="active">Very active</button>
+                            </div>
+                        </div>
+                        <div class="le-field">
+                            <label>If your food quality improves</label>
+                            <div class="le-pills" data-field="tDiet">
+                                <button class="le-pill" type="button" data-value="poor">Poor</button>
+                                <button class="le-pill" type="button" data-value="fair">Fair</button>
+                                <button class="le-pill" type="button" data-value="good">Good</button>
+                                <button class="le-pill" type="button" data-value="excellent">Excellent</button>
+                            </div>
+                        </div>
+                        <div class="le-field">
+                            <div class="le-field-head">
+                                <label for="leTargetWeight">Target weight goal</label>
+                                <output id="targetWeightOutput" for="leTargetWeight">55 kg</output>
+                            </div>
+                            <input class="le-range" type="range" id="leTargetWeight" min="35" max="100" value="55">
+                            <p class="le-field-note">Used only for the projected estimate.</p>
+                            <div class="le-field-meta">
+                                <p class="le-sync-note is-synced" id="targetWeightSync" aria-live="polite">Matching current weight until you adjust it.</p>
+                                <button class="le-reset-target" type="button" id="resetTargetWeight" hidden>Reset to current weight</button>
+                            </div>
+                        </div>
+                        <div class="le-bmi">
+                            <span>Projected BMI at target weight: <strong id="projectedBmiValue">--</strong></span>
+                            <span class="le-bmi-badge" id="projectedBmiCategory">--</span>
+                        </div>
+                    </section>
+                </div>
+            </section>
+            <div class="le-calc-actions">
+                <button class="le-calculate-btn" type="button" id="calculateBtn">Calculate My Healthy Years</button>
+            </div>
+
+            <section class="le-result-card is-pending" id="estimateCard" aria-live="polite" aria-label="Current and projected estimates">
+                <div>
+                    <span class="le-label">Your Estimate</span>
+                    <h2>Current and projected estimates</h2>
+                </div>
+                <div class="le-result-placeholder" id="estimatePlaceholder">
+                    <div class="le-placeholder-inner">
+                        <div class="le-placeholder-orb">?</div>
+                        <p>Your estimate will appear here after you calculate.</p>
+                        <small>Fill in your details, choose your upgrade plan, then reveal your healthy-years snapshot.</small>
+                    </div>
+                </div>
+                <div class="le-result-reveal" id="estimateReveal" hidden>
+                    <div class="le-estimate-grid">
+                        <article class="le-estimate-card">
+                            <span class="le-estimate-kicker">Current / Today</span>
+                            <div class="le-result-grid">
+                                <div class="le-metric">
+                                    <span>Estimated age</span>
+                                    <strong id="estLE">--</strong>
+                                    <small>years</small>
+                                </div>
+                                <div class="le-metric" id="healthyRemMetric">
+                                    <span>Healthy years remaining</span>
+                                    <strong id="healthyRem">--</strong>
+                                    <small>estimated years</small>
+                                </div>
+                            </div>
+                        </article>
+                        <div class="le-gain-bridge" aria-label="Possible healthy-years gain">
+                            <span>Possible gain</span>
+                            <strong id="totGainTop">--</strong>
+                            <small>healthy years</small>
+                        </div>
+                        <article class="le-estimate-card">
+                            <span class="le-estimate-kicker">Target / With Your Upgrade</span>
+                            <div class="le-result-grid">
+                                <div class="le-metric">
+                                    <span>Estimated age</span>
+                                    <strong id="projLE">--</strong>
+                                    <small>years</small>
+                                </div>
+                                <div class="le-metric" id="projectedHealthyRemMetric">
+                                    <span>Healthy years remaining</span>
+                                    <strong id="projHealthyRem">--</strong>
+                                    <small>estimated years</small>
+                                </div>
+                            </div>
+                        </article>
+                    </div>
+                    <div class="le-projection" aria-label="Healthy-years gain breakdown">
+                        <div class="le-gain-row">
+                            <span>Years gained from activity change</span>
+                            <strong class="le-delayed-value" id="actGain">--</strong>
+                        </div>
+                        <div class="le-gain-row">
+                            <span>Years gained from diet change</span>
+                            <strong class="le-delayed-value" id="dietGain">--</strong>
+                        </div>
+                        <div class="le-gain-row">
+                            <span>Years changed from target weight</span>
+                            <strong class="le-delayed-value" id="weightGain">--</strong>
+                        </div>
+                        <div class="le-gain-row">
+                            <span><strong style="padding:0;background:transparent;color:var(--color-primary);">Possible healthy-years gain</strong></span>
+                            <strong class="le-delayed-value" id="totGain">--</strong>
+                        </div>
+                    </div>
+                    <p class="le-note">Small daily habits can shift the estimate. This is a planning tool, not a medical prediction.</p>
+                </div>
+            </section>
+            <p class="le-source-note">Model sources include Bangladesh Sample Vital Registration Survey 2018, HEALS, Matlab HDSS, Bangladesh Demographic &amp; Health Survey 2022, and Sullivan-method disability-free life expectancy research. Adjustments are simplified population estimates and may differ substantially from an individual's real outcome.</p>
+        </main>
+    </div>
+
+    <script>
+        const LIFE_TABLE = {
+            18: 58.0, 20: 56.9, 25: 52.3, 30: 47.7, 35: 43.1,
+            40: 38.6, 45: 34.1, 50: 29.8, 55: 25.7, 60: 21.7,
+            65: 17.9, 70: 14.4
+        };
+
+        const ADJ = {
+            activity: { sedentary: -3.0, light: 0, moderate: 2.2, active: 3.8 },
+            diet: { poor: -2.0, fair: 0, good: 1.5, excellent: 2.5 },
+            srh: { excellent: 3.5, good: 0, fair: -4.5, poor: -11.0 },
+            diabetes: { no: 0, yes: -6.0 },
+            hypertension: { no: 0, yes: -3.5 },
+            tobacco: { never: 0, sometimes: -2.0, daily: -5.5 },
+            education: { none_primary: -2.0, secondary: 0, higher: 1.5 },
+            location: { urban: 0.5, rural: -0.5 }
+        };
+
+        const state = {
+            age: 35,
+            height: 155,
+            weight: 55,
+            location: 'rural',
+            education: 'secondary',
+            srh: 'good',
+            diabetes: 'no',
+            hypertension: 'no',
+            tobacco: 'never',
+            activity: 'light',
+            diet: 'fair',
+            tActivity: 'moderate',
+            tDiet: 'good',
+            targetWeight: 55
+        };
+        let hasCalculated = false;
+        let targetWeightTouched = false;
+
+        function getBaseRemaining(age) {
+            const keys = Object.keys(LIFE_TABLE).map(Number).sort((a, b) => a - b);
+            if (age <= keys[0]) return LIFE_TABLE[keys[0]];
+            if (age >= keys[keys.length - 1]) return LIFE_TABLE[keys[keys.length - 1]];
+            const lo = [...keys].reverse().find(k => k <= age);
+            const hi = keys.find(k => k > age);
+            const t = (age - lo) / (hi - lo);
+            return LIFE_TABLE[lo] * (1 - t) + LIFE_TABLE[hi] * t;
+        }
+
+        function getBMICat(bmi) {
+            if (bmi < 16) return { label: 'Severely underweight', adj: -9 };
+            if (bmi < 18.5) return { label: 'Underweight', adj: -4.5 };
+            if (bmi < 23) return { label: 'Healthy weight', adj: 0 };
+            if (bmi < 27.5) return { label: 'Overweight', adj: -2 };
+            return { label: 'Obesity range', adj: -5 };
+        }
+
+        function calcResults(s) {
+            const bmi = s.weight / ((s.height / 100) ** 2);
+            const bmiInfo = getBMICat(bmi);
+            const projectedBmi = s.targetWeight / ((s.height / 100) ** 2);
+            const projectedBmiInfo = getBMICat(projectedBmi);
+            const baseRem = getBaseRemaining(s.age);
+            const totalAdj =
+                bmiInfo.adj +
+                ADJ.srh[s.srh] + ADJ.diabetes[s.diabetes] + ADJ.hypertension[s.hypertension] +
+                ADJ.tobacco[s.tobacco] + ADJ.activity[s.activity] + ADJ.diet[s.diet] +
+                ADJ.education[s.education] + ADJ.location[s.location];
+            const adjRem = Math.max(3, Math.min(baseRem + totalAdj, baseRem + 15));
+            const estLE = Math.round(s.age + adjRem);
+
+            let fp = s.location === 'urban' ? 0.90 : 0.87;
+            if (s.diabetes === 'yes') fp -= 0.05;
+            if (s.hypertension === 'yes') fp -= 0.03;
+            if (bmi < 18.5 || bmi >= 27.5) fp -= 0.02;
+            if (s.activity === 'active') fp += 0.02;
+            if (s.activity === 'sedentary') fp -= 0.03;
+            if (s.diet === 'excellent') fp += 0.01;
+            if (s.diet === 'poor') fp -= 0.02;
+            fp = Math.max(0.70, Math.min(0.95, fp));
+            const healthyRem = Math.round(adjRem * fp);
+
+            const actGain = +(ADJ.activity[s.tActivity] - ADJ.activity[s.activity]).toFixed(1);
+            const dietGain = +(ADJ.diet[s.tDiet] - ADJ.diet[s.diet]).toFixed(1);
+            const weightGain = +(projectedBmiInfo.adj - bmiInfo.adj).toFixed(1);
+
+            const projTotalAdj =
+                projectedBmiInfo.adj +
+                ADJ.srh[s.srh] + ADJ.diabetes[s.diabetes] + ADJ.hypertension[s.hypertension] +
+                ADJ.tobacco[s.tobacco] + ADJ.activity[s.tActivity] + ADJ.diet[s.tDiet] +
+                ADJ.education[s.education] + ADJ.location[s.location];
+            const projAdjRem = Math.max(3, Math.min(baseRem + projTotalAdj, baseRem + 15));
+            const projLE = Math.round(s.age + projAdjRem);
+
+            let pfp = s.location === 'urban' ? 0.90 : 0.87;
+            if (s.diabetes === 'yes') pfp -= 0.05;
+            if (s.hypertension === 'yes') pfp -= 0.03;
+            if (projectedBmi < 18.5 || projectedBmi >= 27.5) pfp -= 0.02;
+            if (s.tActivity === 'active') pfp += 0.02;
+            if (s.tActivity === 'sedentary') pfp -= 0.03;
+            if (s.tDiet === 'excellent') pfp += 0.01;
+            if (s.tDiet === 'poor') pfp -= 0.02;
+            pfp = Math.max(0.70, Math.min(0.95, pfp));
+            const projHealthyRem = Math.round(projAdjRem * pfp);
+            const totGain = +(projHealthyRem - healthyRem).toFixed(1);
+
+            return {
+                bmi: +bmi.toFixed(1),
+                bmiInfo,
+                projectedBmi: +projectedBmi.toFixed(1),
+                projectedBmiInfo,
+                estLE,
+                healthyRem,
+                actGain,
+                dietGain,
+                weightGain,
+                totGain,
+                projLE,
+                projHealthyRem
+            };
+        }
+
+        function setText(id, text) {
+            const el = document.getElementById(id);
+            if (el) el.textContent = text;
+        }
+
+        function formatGain(value) {
+            return (value >= 0 ? '+' : '') + value + ' yrs';
+        }
+
+        function setHealthyYearsState(id, value, allowWarning, forceStrong = false, allowStrong = true) {
+            const metric = document.getElementById(id);
+            if (!metric) return;
+            metric.classList.toggle('is-warning', allowWarning && value < 25);
+            metric.classList.toggle('is-strong', allowStrong && (forceStrong || value > 35));
+        }
+
+        function updateTargetWeightState() {
+            const sync = document.getElementById('targetWeightSync');
+            const reset = document.getElementById('resetTargetWeight');
+            if (sync) {
+                sync.textContent = targetWeightTouched
+                    ? 'Target weight set separately.'
+                    : 'Matching current weight until you adjust it.';
+                sync.classList.toggle('is-synced', !targetWeightTouched);
+                sync.classList.toggle('is-independent', targetWeightTouched);
+            }
+            if (reset) {
+                reset.hidden = !targetWeightTouched;
+            }
+        }
+
+        function updateResults(result) {
+            setText('estLE', result.estLE);
+            setText('healthyRem', result.healthyRem);
+            setText('actGain', formatGain(result.actGain));
+            setText('dietGain', formatGain(result.dietGain));
+            setText('weightGain', formatGain(result.weightGain));
+            setText('totGain', formatGain(result.totGain));
+            setText('totGainTop', formatGain(result.totGain));
+            setText('projLE', result.projLE);
+            setText('projHealthyRem', result.projHealthyRem);
+            const hasMeaningfulProjectedGain = result.projHealthyRem - result.healthyRem >= 2;
+            setHealthyYearsState('healthyRemMetric', result.healthyRem, true, false, false);
+            setHealthyYearsState('projectedHealthyRemMetric', result.projHealthyRem, false, hasMeaningfulProjectedGain);
+        }
+
+        function render() {
+            const result = calcResults(state);
+            setText('ageOutput', state.age + ' years');
+            setText('heightOutput', state.height + ' cm');
+            setText('weightOutput', state.weight + ' kg');
+            setText('targetWeightOutput', state.targetWeight + ' kg');
+            setText('bmiValue', result.bmi);
+            setText('bmiCategory', result.bmiInfo.label);
+            setText('projectedBmiValue', result.projectedBmi);
+            setText('projectedBmiCategory', result.projectedBmiInfo.label);
+            updateTargetWeightState();
+
+            if (hasCalculated) {
+                updateResults(result);
+            }
+
+            document.querySelectorAll('.le-pills').forEach(group => {
+                const field = group.dataset.field;
+                group.querySelectorAll('.le-pill').forEach(button => {
+                    button.classList.toggle('is-active', button.dataset.value === state[field]);
+                });
+            });
+        }
+
+        document.querySelectorAll('.le-range').forEach(input => {
+            input.addEventListener('input', event => {
+                const map = {
+                    leAge: 'age',
+                    leHeight: 'height',
+                    leWeight: 'weight',
+                    leTargetWeight: 'targetWeight'
+                };
+                if (event.target.id === 'leTargetWeight') {
+                    targetWeightTouched = true;
+                }
+                state[map[event.target.id]] = Number(event.target.value);
+                if (event.target.id === 'leWeight' && !targetWeightTouched) {
+                    state.targetWeight = state.weight;
+                    const targetWeightInput = document.getElementById('leTargetWeight');
+                    if (targetWeightInput) targetWeightInput.value = state.targetWeight;
+                }
+                render();
+            });
+        });
+
+        document.getElementById('resetTargetWeight')?.addEventListener('click', () => {
+            targetWeightTouched = false;
+            state.targetWeight = state.weight;
+            const targetWeightInput = document.getElementById('leTargetWeight');
+            if (targetWeightInput) targetWeightInput.value = state.targetWeight;
+            render();
+        });
+
+        document.querySelectorAll('.le-pills').forEach(group => {
+            group.addEventListener('click', event => {
+                const button = event.target.closest('.le-pill');
+                if (!button) return;
+                state[group.dataset.field] = button.dataset.value;
+                render();
+            });
+        });
+
+        document.getElementById('calculateBtn')?.addEventListener('click', () => {
+            hasCalculated = true;
+            const page = document.getElementById('lePage');
+            const card = document.getElementById('estimateCard');
+            const reveal = document.getElementById('estimateReveal');
+            const button = document.getElementById('calculateBtn');
+            page?.classList.add('has-calculated');
+            card?.classList.remove('is-pending');
+            card?.classList.add('is-revealed');
+            if (reveal) reveal.hidden = false;
+            if (button) button.textContent = 'Update My Estimate';
+            updateResults(calcResults(state));
+            card?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        });
+
+        render();
+    </script>
+</body>
+</html>

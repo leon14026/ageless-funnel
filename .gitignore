@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Secrets — NEVER commit these. (config.js is intentionally NOT ignored: it holds
+# only PUBLIC values. True secrets live as Supabase Edge Function secrets.)
+.env
+.env.*
+*.key
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+*.log
+
+# Python tooling that may sit beside image assets
+__pycache__/
+*.py[cod]
