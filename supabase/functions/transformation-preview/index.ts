@@ -115,17 +115,14 @@ Deno.serve(async (req: Request) => {
     const providerBody = await providerResponse.json().catch(() => ({}));
 
     if (!providerResponse.ok) {
-      console.error(
-        "OpenAI image edit failed:",
-        providerResponse.status,
-        providerBody?.error?.code || "unknown_error",
-      );
+      // Detailed reason stays server-side (visible in Supabase function logs); users see a generic message.
+      console.error("OpenAI image edit failed:", providerResponse.status, JSON.stringify(providerBody?.error || {}));
       return json({ error: "The preview could not be generated. Please try again." }, 502);
     }
 
     const imageBase64 = providerBody?.data?.[0]?.b64_json;
     if (!imageBase64) {
-      console.error("OpenAI image edit returned no image.");
+      console.error("OpenAI image edit returned no image:", JSON.stringify(providerBody).slice(0, 500));
       return json({ error: "The preview could not be generated. Please try again." }, 502);
     }
 
