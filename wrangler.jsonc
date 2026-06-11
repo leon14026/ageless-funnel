@@ -1,0 +1,10 @@
+{
+  // Static-assets-only Worker for the Ageless by Tulee funnel (no server-side Worker code).
+  // Cloudflare serves the repo's files directly; the SPA uses hash routing (#/...).
+  "name": "ageless-funnel",
+  "compatibility_date": "2025-06-01",
+  "assets": {
+    "directory": "./",
+    "not_found_handling": "single-page-application"
+  }
+}
