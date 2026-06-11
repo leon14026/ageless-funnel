@@ -1,8 +1,0 @@
-# Files that should NOT be uploaded as public static assets.
-.git
-.gitignore
-.assetsignore
-wrangler.jsonc
-README.md
-node_modules
-supabase
