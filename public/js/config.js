@@ -17,10 +17,9 @@ const CONFIG = {
     SUPABASE_ANON_KEY: 'sb_publishable_-4Z1adKiTvDJMQiPqajb2w__T3FHmah',
     SUPABASE_FUNCTIONS_URL: 'https://osbaarjfafflzoftojbd.supabase.co/functions/v1',
 
-    // Cloudflare Turnstile SITE key (public). Get it from the Turnstile dashboard.
-    // The matching SECRET key goes in Supabase Edge Function secrets, never here.
-    // TODO(owner): paste your Turnstile site key. AI preview stays disabled until set.
-    TURNSTILE_SITE_KEY: '',
+    // Cloudflare Turnstile SITE key (public). The matching SECRET key goes in
+    // Supabase Edge Function secrets (TURNSTILE_SECRET_KEY), never here.
+    TURNSTILE_SITE_KEY: '0x4AAAAAADi0QEbD9zYzW1eh',
 
     // Manual pre-order payment details shown on the checkout page (preorder mode).
     // bKash only for the beta (no bank transfer yet).
