@@ -1,0 +1,21 @@
+name: Supabase keepalive
+
+# Free-tier Supabase projects pause after ~7 days of no activity.
+# This pings the REST API every 2 days so the project stays active.
+# Uses only the PUBLIC anon (publishable) key — no secrets.
+
+on:
+  schedule:
+    - cron: "17 6 */2 * *"   # every 2 days at 06:17 UTC
+  workflow_dispatch:          # allows manual "Run workflow" from the Actions tab
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase REST (executes a query -> counts as activity)
+        run: |
+          curl -fsS "https://osbaarjfafflzoftojbd.supabase.co/rest/v1/waitlist?select=id&limit=1" \
+            -H "apikey: sb_publishable_-4Z1adKiTvDJMQiPqajb2w__T3FHmah" \
+            -H "Authorization: Bearer sb_publishable_-4Z1adKiTvDJMQiPqajb2w__T3FHmah" \
+            -o /dev/null -w "Supabase keepalive: HTTP %{http_code}\n"
