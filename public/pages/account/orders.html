@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Order History | Ageless by Tulee</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-protected>
+    <!-- Navigation -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../../index.html" class="logo">
+                    <span class="logo-text">Ageless</span>
+                    <span class="logo-accent">by Tulee</span>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="../programs/index.html">Programs</a></li>
+                    <li><a href="../tracker/index.html">Tracker</a></li>
+                    <li class="auth-nav">
+                        <a href="../auth/login.html" class="btn btn-nav">Sign In</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Orders Section -->
+    <section class="account-section">
+        <div class="container">
+            <div class="account-header">
+                <h1 class="section-title">Order History</h1>
+                <p class="account-subtitle">View all your past purchases</p>
+                <div class="account-nav">
+                    <a href="profile.html" class="account-nav-link">Profile</a>
+                    <a href="orders.html" class="account-nav-link active">Orders</a>
+                </div>
+            </div>
+
+            <!-- Loading State -->
+            <div id="loading-state" class="loading-state">
+                <span class="spinner"></span>
+                <p>Loading orders...</p>
+            </div>
+
+            <!-- Orders List -->
+            <div id="orders-list" class="orders-list" style="display: none;">
+                <!-- Orders will be populated here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="empty-state" style="display: none;">
+                <span class="empty-icon">📦</span>
+                <h3>No orders yet</h3>
+                <p>When you make a purchase, your orders will appear here.</p>
+                <a href="../programs/index.html" class="btn btn-primary">View Programs</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer footer-minimal">
+        <div class="container">
+            <p>&copy; 2026 Ageless by Tulee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- App Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/payment.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            const loadingState = document.getElementById('loading-state');
+            const ordersList = document.getElementById('orders-list');
+            const emptyState = document.getElementById('empty-state');
+
+            try {
+                // Get user's orders
+                const { data: orders, error } = await Payment.getOrderHistory(50);
+
+                loadingState.style.display = 'none';
+
+                if (error) {
+                    console.error('Error loading orders:', error);
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                if (!orders || orders.length === 0) {
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                // Render orders
+                ordersList.innerHTML = orders.map(order => renderOrder(order)).join('');
+                ordersList.style.display = 'block';
+
+            } catch (err) {
+                console.error('Error:', err);
+                loadingState.style.display = 'none';
+                emptyState.style.display = 'block';
+            }
+        });
+
+        function renderOrder(order) {
+            const date = new Date(order.created_at).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const statusClass = getStatusClass(order.status);
+            const statusLabel = getStatusLabel(order.status);
+
+            return `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div class="order-id">
+                            <span class="order-label">Order ID</span>
+                            <span class="order-value">${order.transaction_id}</span>
+                        </div>
+                        <div class="order-date">
+                            <span class="order-label">Date</span>
+                            <span class="order-value">${date}</span>
+                        </div>
+                        <div class="order-status ${statusClass}">
+                            ${statusLabel}
+                        </div>
+                    </div>
+                    <div class="order-details">
+                        <div class="order-product">
+                            <h4>${order.product_name}</h4>
+                        </div>
+                        <div class="order-amount">
+                            ${Payment.formatPrice(order.amount, order.currency)}
+                        </div>
+                    </div>
+                    ${order.status === 'completed' && order.product_name?.toLowerCase().includes('ebook') ? `
+                        <div class="order-actions">
+                            <a href="#" class="btn btn-secondary btn-sm" onclick="alert('Download link will be sent to your email.'); return false;">
+                                Download E-Book
+                            </a>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+        }
+
+        function getStatusClass(status) {
+            switch (status) {
+                case 'completed': return 'status-success';
+                case 'pending': return 'status-pending';
+                case 'failed': return 'status-error';
+                case 'cancelled': return 'status-cancelled';
+                case 'refunded': return 'status-refunded';
+                default: return 'status-pending';
+            }
+        }
+
+        function getStatusLabel(status) {
+            switch (status) {
+                case 'completed': return 'Completed';
+                case 'pending': return 'Pending';
+                case 'failed': return 'Failed';
+                case 'cancelled': return 'Cancelled';
+                case 'refunded': return 'Refunded';
+                default: return status;
+            }
+        }
+    </script>
+
+    <style>
+        .account-section {
+            min-height: calc(100vh - 200px);
+            padding: var(--space-4xl) var(--space-lg);
+            background: var(--color-cream);
+        }
+
+        .account-header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .account-subtitle {
+            color: var(--color-text-muted);
+            margin-top: var(--space-sm);
+        }
+
+        .account-nav {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+
+        .account-nav-link {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-base);
+        }
+
+        .account-nav-link:hover {
+            background: var(--color-white);
+            color: var(--color-plum);
+        }
+
+        .account-nav-link.active {
+            background: var(--color-plum);
+            color: var(--color-white);
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: var(--space-4xl);
+            color: var(--color-text-muted);
+        }
+
+        .loading-state .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top-color: var(--color-plum);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: var(--space-md);
+        }
+
+        .orders-list {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .order-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-lg);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .order-header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-lg);
+            align-items: flex-start;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .order-id, .order-date {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .order-label {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: var(--space-xs);
+        }
+
+        .order-value {
+            font-weight: 600;
+            color: var(--color-plum);
+            font-size: 0.9rem;
+        }
+
+        .order-status {
+            padding: var(--space-xs) var(--space-md);
+            border-radius: var(--radius-full);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(122, 154, 133, 0.2);
+            color: #4a7c59;
+        }
+
+        .status-pending {
+            background: rgba(212, 163, 115, 0.2);
+            color: #8b6914;
+        }
+
+        .status-error {
+            background: rgba(233, 167, 181, 0.3);
+            color: #a84258;
+        }
+
+        .status-cancelled {
+            background: var(--color-cream);
+            color: var(--color-text-muted);
+        }
+
+        .status-refunded {
+            background: rgba(100, 149, 237, 0.2);
+            color: #4169e1;
+        }
+
+        .order-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-md);
+        }
+
+        .order-product h4 {
+            margin: 0;
+            color: var(--color-text);
+        }
+
+        .order-amount {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--color-plum);
+        }
+
+        .order-actions {
+            margin-top: var(--space-lg);
+            padding-top: var(--space-md);
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: var(--space-4xl);
+            background: var(--color-white);
+            border-radius: var(--radius-xl);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .empty-icon {
+            font-size: 4rem;
+            display: block;
+            margin-bottom: var(--space-lg);
+        }
+
+        .empty-state h3 {
+            color: var(--color-plum);
+            margin-bottom: var(--space-sm);
+        }
+
+        .empty-state p {
+            color: var(--color-text-muted);
+            margin-bottom: var(--space-xl);
+        }
+
+        .btn-sm {
+            padding: var(--space-sm) var(--space-lg);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            .order-header {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+
+            .order-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Flexible Weekly Program | Ageless by Tulee</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-protected data-requires-entitlement>
+    <!-- Navigation -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../../index.html" class="logo">
+                    <span class="logo-text">Ageless</span>
+                    <span class="logo-accent">by Tulee</span>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Programs</a></li>
+                    <li><a href="../tracker/index.html">Tracker</a></li>
+                    <li class="auth-nav">
+                        <a href="../auth/login.html" class="btn btn-nav">Sign In</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="program-page">
+        <div class="container">
+            <!-- Page Header -->
+            <div class="page-header">
+                <span class="section-tag">Your Journey</span>
+                <h1 class="section-title">Flexible Weekly Transformation</h1>
+                <p class="section-subtitle">A complete fitness program designed for women 40+ to build strength, improve flexibility, and feel amazing.</p>
+            </div>
+
+            <!-- Progress Section -->
+            <div class="progress-section">
+                <div class="progress-text" id="progress-text">Loading progress...</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Weeks Grid -->
+            <div class="weeks-grid" id="weeks-grid">
+                <div class="loading-spinner">Loading program...</div>
+            </div>
+
+            <!-- Empty State -->
+            <div class="empty-state" id="empty-state" style="display: none;">
+                <span class="empty-icon">📚</span>
+                <h3>Program content coming soon</h3>
+                <p>The flexible weekly program is being prepared. Check back soon!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-minimal">
+        <div class="container">
+            <p>&copy; 2026 Ageless by Tulee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- App Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/payment.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/programs.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            await loadProgram();
+        });
+
+        async function loadProgram() {
+            const grid = document.getElementById('weeks-grid');
+            const emptyState = document.getElementById('empty-state');
+            const progressText = document.getElementById('progress-text');
+            const progressBar = document.getElementById('progress-bar');
+
+            // Load progress
+            const progress = await Programs.getProgress();
+            progressText.textContent = `${progress.completed} of ${progress.total} weeks completed (${progress.percentage}%)`;
+            progressBar.style.width = `${progress.percentage}%`;
+
+            // Load weeks
+            const { data: weeks, error } = await Programs.getWeeksWithProgress();
+
+            if (error) {
+                grid.innerHTML = '<p class="error-message">Error loading program. Please try again.</p>';
+                return;
+            }
+
+            if (!weeks || weeks.length === 0) {
+                grid.innerHTML = '';
+                emptyState.style.display = 'block';
+                return;
+            }
+
+            // Render weeks grid
+            grid.innerHTML = weeks.map(week => Programs.renderWeekCard(week)).join('');
+        }
+    </script>
+</body>
+</html>

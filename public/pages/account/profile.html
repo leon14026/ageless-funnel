@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>My Profile | Ageless by Tulee</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-protected>
+    <!-- Navigation -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../../index.html" class="logo">
+                    <span class="logo-text">Ageless</span>
+                    <span class="logo-accent">by Tulee</span>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="../programs/index.html">Programs</a></li>
+                    <li><a href="../tracker/index.html">Tracker</a></li>
+                    <li class="auth-nav">
+                        <a href="../auth/login.html" class="btn btn-nav">Sign In</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Profile Section -->
+    <section class="account-section">
+        <div class="container">
+            <div class="account-header">
+                <h1 class="section-title">My Profile</h1>
+                <p class="account-subtitle">Manage your account settings</p>
+                <div class="account-nav">
+                    <a href="profile.html" class="account-nav-link active">Profile</a>
+                    <a href="orders.html" class="account-nav-link">Orders</a>
+                </div>
+            </div>
+
+            <div class="profile-content">
+                <!-- Profile Info Card -->
+                <div class="profile-card">
+                    <h3>Account Information</h3>
+
+                    <form id="profile-form" class="profile-form">
+                        <div class="form-field">
+                            <label for="full-name">Full Name</label>
+                            <input type="text" id="full-name" name="full-name" placeholder="Your full name">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" disabled>
+                            <span class="field-hint">Email cannot be changed</span>
+                        </div>
+
+                        <div id="profile-message" class="form-message" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-primary" id="save-profile-btn">
+                            Save Changes
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Change Password Card -->
+                <div class="profile-card">
+                    <h3>Change Password</h3>
+
+                    <form id="password-form" class="profile-form">
+                        <div class="form-field">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="new-password" placeholder="Minimum 6 characters" minlength="6">
+                        </div>
+
+                        <div class="form-field">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" name="confirm-password" placeholder="Re-enter password" minlength="6">
+                        </div>
+
+                        <div id="password-message" class="form-message" style="display: none;"></div>
+
+                        <button type="submit" class="btn btn-secondary" id="change-password-btn">
+                            Update Password
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Account Stats -->
+                <div class="profile-card profile-stats">
+                    <h3>Your Activity</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-entries">-</span>
+                            <span class="stat-label">Progress Entries</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-orders">-</span>
+                            <span class="stat-label">Orders</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value" id="stat-weeks">-</span>
+                            <span class="stat-label">Weeks Completed</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer footer-minimal">
+        <div class="container">
+            <p>&copy; 2026 Ageless by Tulee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- App Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Load user profile
+            await loadProfile();
+            await loadStats();
+
+            // Profile form submission
+            const profileForm = document.getElementById('profile-form');
+            const saveProfileBtn = document.getElementById('save-profile-btn');
+            const profileMessage = document.getElementById('profile-message');
+
+            profileForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const fullName = document.getElementById('full-name').value.trim();
+
+                if (!fullName) {
+                    showMessage(profileMessage, 'Please enter your name.', 'error');
+                    return;
+                }
+
+                saveProfileBtn.disabled = true;
+                saveProfileBtn.innerHTML = '<span class="spinner"></span> Saving...';
+                profileMessage.style.display = 'none';
+
+                try {
+                    const { error } = await Auth.updateProfile({ full_name: fullName });
+
+                    if (error) {
+                        showMessage(profileMessage, error.message, 'error');
+                    } else {
+                        showMessage(profileMessage, 'Profile updated successfully!', 'success');
+                    }
+                } catch (err) {
+                    showMessage(profileMessage, 'An error occurred. Please try again.', 'error');
+                }
+
+                saveProfileBtn.disabled = false;
+                saveProfileBtn.textContent = 'Save Changes';
+            });
+
+            // Password form submission
+            const passwordForm = document.getElementById('password-form');
+            const changePasswordBtn = document.getElementById('change-password-btn');
+            const passwordMessage = document.getElementById('password-message');
+
+            passwordForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+
+                if (!newPassword || !confirmPassword) {
+                    showMessage(passwordMessage, 'Please fill in both password fields.', 'error');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showMessage(passwordMessage, 'Passwords do not match.', 'error');
+                    return;
+                }
+
+                if (newPassword.length < 6) {
+                    showMessage(passwordMessage, 'Password must be at least 6 characters.', 'error');
+                    return;
+                }
+
+                changePasswordBtn.disabled = true;
+                changePasswordBtn.innerHTML = '<span class="spinner"></span> Updating...';
+                passwordMessage.style.display = 'none';
+
+                try {
+                    const { error } = await Auth.updatePassword(newPassword);
+
+                    if (error) {
+                        showMessage(passwordMessage, error.message, 'error');
+                    } else {
+                        showMessage(passwordMessage, 'Password updated successfully!', 'success');
+                        passwordForm.reset();
+                    }
+                } catch (err) {
+                    showMessage(passwordMessage, 'An error occurred. Please try again.', 'error');
+                }
+
+                changePasswordBtn.disabled = false;
+                changePasswordBtn.textContent = 'Update Password';
+            });
+        });
+
+        async function loadProfile() {
+            const user = await Auth.getUser();
+
+            if (user) {
+                document.getElementById('full-name').value = user.user_metadata?.full_name || '';
+                document.getElementById('email').value = user.email || '';
+            }
+        }
+
+        async function loadStats() {
+            try {
+                // Get progress entries count
+                const { count: entriesCount } = await supabaseClient
+                    .from('progress_entries')
+                    .select('*', { count: 'exact', head: true });
+                document.getElementById('stat-entries').textContent = entriesCount || 0;
+
+                // Get orders count
+                const { count: ordersCount } = await supabaseClient
+                    .from('orders')
+                    .select('*', { count: 'exact', head: true });
+                document.getElementById('stat-orders').textContent = ordersCount || 0;
+
+                // Get completed weeks count
+                const { count: weeksCount } = await supabaseClient
+                    .from('user_program_progress')
+                    .select('*', { count: 'exact', head: true });
+                document.getElementById('stat-weeks').textContent = weeksCount || 0;
+
+            } catch (err) {
+                console.error('Error loading stats:', err);
+            }
+        }
+
+        function showMessage(element, text, type) {
+            element.textContent = text;
+            element.className = `form-message form-message--${type}`;
+            element.style.display = 'block';
+        }
+    </script>
+
+    <style>
+        .account-section {
+            min-height: calc(100vh - 200px);
+            padding: var(--space-4xl) var(--space-lg);
+            background: var(--color-cream);
+        }
+
+        .account-header {
+            text-align: center;
+            margin-bottom: var(--space-3xl);
+        }
+
+        .account-subtitle {
+            color: var(--color-text-muted);
+            margin-top: var(--space-sm);
+        }
+
+        .account-nav {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+        }
+
+        .account-nav-link {
+            padding: var(--space-sm) var(--space-lg);
+            border-radius: var(--radius-md);
+            color: var(--color-text-light);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all var(--transition-base);
+        }
+
+        .account-nav-link:hover {
+            background: var(--color-white);
+            color: var(--color-plum);
+        }
+
+        .account-nav-link.active {
+            background: var(--color-plum);
+            color: var(--color-white);
+        }
+
+        .profile-content {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .profile-card {
+            background: var(--color-white);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            margin-bottom: var(--space-xl);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .profile-card h3 {
+            color: var(--color-plum);
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid var(--color-border-light);
+        }
+
+        .profile-form .form-field {
+            margin-bottom: var(--space-lg);
+        }
+
+        .profile-form label {
+            display: block;
+            font-weight: 600;
+            color: var(--color-plum);
+            margin-bottom: var(--space-sm);
+            font-size: 0.9rem;
+        }
+
+        .profile-form input {
+            width: 100%;
+            padding: var(--space-md);
+            border: 1px solid var(--color-border);
+            border-radius: var(--radius-md);
+            font-size: 1rem;
+            transition: border-color var(--transition-base);
+        }
+
+        .profile-form input:focus {
+            outline: none;
+            border-color: var(--color-rose);
+        }
+
+        .profile-form input:disabled {
+            background: var(--color-cream);
+            color: var(--color-text-muted);
+            cursor: not-allowed;
+        }
+
+        .field-hint {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--color-text-muted);
+            margin-top: var(--space-xs);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-lg);
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: var(--space-lg);
+            background: var(--color-cream);
+            border-radius: var(--radius-md);
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--color-plum);
+            font-family: var(--font-display);
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--color-text-muted);
+            margin-top: var(--space-xs);
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</body>
+</html>

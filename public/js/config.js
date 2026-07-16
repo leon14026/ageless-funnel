@@ -21,6 +21,10 @@ const CONFIG = {
     // Supabase Edge Function secrets (TURNSTILE_SECRET_KEY), never here.
     TURNSTILE_SITE_KEY: '0x4AAAAAADi0QEbD9zYzW1eh',
 
+    // CalorieNinjas nutrition API (member food tracker). Low-risk free API; the
+    // tracker falls back to the local Bangladeshi food DB + custom foods without it.
+    CALORIE_NINJAS_API_KEY: 'iJXjJ+SI0Ai0Dsm8jZtrUA==DGwUocOA4VXhx69j',
+
     // Manual pre-order payment details shown on the checkout page (preorder mode).
     // bKash only for the beta (no bank transfer yet).
     PAYMENT: {
