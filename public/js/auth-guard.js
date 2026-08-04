@@ -119,7 +119,7 @@ const AuthGuard = {
         if (redirectUrl && !redirectUrl.includes('/auth/')) {
             window.location.href = redirectUrl;
         } else {
-            window.location.href = '/pages/programs/index.html';
+            window.location.href = '/pages/home/index.html';
         }
     }
 };

@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>My Dashboard | Ageless by Tulee</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-protected data-requires-entitlement>
+    <!-- Navigation -->
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../../index.html" class="logo">
+                    <span class="logo-text">Ageless</span>
+                    <span class="logo-accent">by Tulee</span>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Toggle menu">
+                    <span></span><span></span><span></span>
+                </button>
+                <ul class="nav-links">
+                    <li><a href="index.html" class="active">Home</a></li>
+                    <li><a href="../programs/index.html">Programs</a></li>
+                    <li><a href="../tracker/index.html">Tracker</a></li>
+                    <li class="auth-nav">
+                        <a href="../auth/login.html" class="btn btn-nav">Sign In</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="member-home">
+        <div class="container">
+            <div class="page-header home-hero">
+                <span class="section-tag">Your Dashboard</span>
+                <h1 class="section-title">Welcome, <span id="member-name">there</span>!</h1>
+                <p class="section-subtitle">Everything in one place — your program, your food log, and your progress. Here's where to start.</p>
+            </div>
+
+            <!-- Smart getting-started checklist (auto-hides when complete) -->
+            <section class="getting-started" id="getting-started" style="display: none;">
+                <div class="gs-head">
+                    <h2 class="gs-title">Getting started</h2>
+                    <span class="gs-count" id="gs-count"></span>
+                </div>
+                <ul class="gs-list" id="gs-list"></ul>
+            </section>
+
+            <!-- Navigation cards -->
+            <div class="home-cards">
+                <a class="home-card" href="../programs/index.html">
+                    <span class="home-card-icon" aria-hidden="true">🎬</span>
+                    <h3>This Week's Workout</h3>
+                    <p>Follow Coach Tulee's guided workout videos, week by week.</p>
+                    <span class="home-card-cta">Go to Programs &rarr;</span>
+                </a>
+                <a class="home-card" href="../tracker/index.html#nutrition-section">
+                    <span class="home-card-icon" aria-hidden="true">🥗</span>
+                    <h3>Food Log &amp; Nutrition</h3>
+                    <p>Log meals and track calories &amp; macros against your goals.</p>
+                    <span class="home-card-cta">Open Tracker &rarr;</span>
+                </a>
+                <a class="home-card" href="../tracker/index.html">
+                    <span class="home-card-icon" aria-hidden="true">📈</span>
+                    <h3>Progress &amp; Measurements</h3>
+                    <p>Record your weight and measurements and watch your trend.</p>
+                    <span class="home-card-cta">Track Progress &rarr;</span>
+                </a>
+                <a class="home-card" href="../account/profile.html">
+                    <span class="home-card-icon" aria-hidden="true">⚙️</span>
+                    <h3>Account</h3>
+                    <p>Manage your profile and preferences.</p>
+                    <span class="home-card-cta">View Account &rarr;</span>
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer footer-minimal">
+        <div class="container">
+            <p>&copy; 2026 Ageless by Tulee. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Guided setup tour (first-run) -->
+    <div class="onboarding-tour" id="tour" hidden>
+        <div class="tour-modal" role="dialog" aria-modal="true" aria-labelledby="tour-heading">
+            <button class="tour-close" id="tour-close" aria-label="Close">&times;</button>
+            <div class="tour-progress" id="tour-step-indicator"></div>
+
+            <!-- Step 1: Welcome -->
+            <div class="tour-step" data-step="1">
+                <span class="tour-emoji" aria-hidden="true">👋</span>
+                <h2 id="tour-heading">Welcome to Ageless by Tulee!</h2>
+                <p>Let's get you set up in under a minute — we'll calculate your nutrition targets and point you to your first workout.</p>
+                <div class="tour-actions">
+                    <button class="btn btn-nav" id="tour-skip" type="button">I'll do this later</button>
+                    <button class="btn btn-primary" data-next type="button">Get started</button>
+                </div>
+            </div>
+
+            <!-- Step 2: Goal -->
+            <div class="tour-step" data-step="2" hidden>
+                <h2>What's your main goal?</h2>
+                <div class="tour-choices" id="goal-choices"></div>
+                <div class="tour-actions">
+                    <button class="btn btn-nav" data-back type="button">Back</button>
+                    <button class="btn btn-primary" data-next id="goal-next" type="button" disabled>Next</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Details -->
+            <div class="tour-step" data-step="3" hidden>
+                <h2>A few details</h2>
+                <p class="tour-hint">We use these to calculate your daily calorie &amp; macro targets. You can change them anytime in the Tracker.</p>
+                <form id="details-form" class="tour-form" onsubmit="return false;">
+                    <div class="tour-field"><label for="f-age">Age</label><input type="number" id="f-age" min="16" max="100" placeholder="45"></div>
+                    <div class="tour-field"><label for="f-gender">Gender</label><select id="f-gender"><option value="female">Female</option><option value="male">Male</option></select></div>
+                    <div class="tour-field"><label for="f-weight">Weight (kg)</label><input type="number" id="f-weight" step="0.1" min="30" max="250" placeholder="70"></div>
+                    <div class="tour-field"><label for="f-height">Height (cm)</label><input type="number" id="f-height" min="120" max="220" placeholder="162"></div>
+                    <div class="tour-field tour-field-wide"><label for="f-activity">Activity level</label><select id="f-activity"></select></div>
+                </form>
+                <p class="tour-error" id="details-error"></p>
+                <div class="tour-actions">
+                    <button class="btn btn-nav" data-back type="button">Back</button>
+                    <button class="btn btn-primary" id="details-save" type="button">Calculate my targets</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Result -->
+            <div class="tour-step" data-step="4" hidden>
+                <span class="tour-emoji" aria-hidden="true">🎯</span>
+                <h2>You're all set!</h2>
+                <p id="targets-summary" class="targets-summary"></p>
+                <p>Your first workout is ready whenever you are.</p>
+                <div class="tour-actions">
+                    <button class="btn btn-nav" id="tour-done" type="button">Explore my dashboard</button>
+                    <a class="btn btn-primary" href="../programs/index.html">Go to Programs</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Supabase CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- App Scripts -->
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/payment.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/local-foods.js"></script>
+    <script src="../../js/nutrition.js"></script>
+    <script src="../../js/member-home.js"></script>
+</body>
+</html>
