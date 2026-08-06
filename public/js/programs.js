@@ -25,6 +25,30 @@ const Programs = {
         return parts.length > 1 ? parts[parts.length - 1] : (mo.title || ('Month ' + mo.month));
     },
 
+    // Distinct month names (the sheet title is generic); reused from the funnel curriculum.
+    MONTH_NAMES: { 1: 'Gentle Reset', 2: 'Energy & Glow', 3: 'Tone & Mobility', 4: 'Slimmer & Lighter', 5: 'Radiance & Resilience', 6: 'Be Ageless' },
+    monthName(n) { return this.MONTH_NAMES[n] || ('Month ' + n); },
+
+    monthProgress(m) {
+        const mo = this.getMonth(m);
+        let total = 0, done = 0;
+        if (mo) mo.days.forEach(d => { if (!d.rest) { total++; if (this.isDayComplete(m, d.day)) done++; } });
+        return { done: done, total: total };
+    },
+
+    renderMonthCard(mo) {
+        const p = this.monthProgress(mo.month);
+        const complete = p.total > 0 && p.done >= p.total;
+        const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;
+        return '<a class="program-month-card' + (complete ? ' month-complete' : '') + '" href="month.html?month=' + mo.month + '">' +
+            (complete ? '<span class="day-check">✓</span>' : '') +
+            '<span class="pmc-badge">Month ' + mo.month + '</span>' +
+            '<h3 class="pmc-title">' + this.esc(this.monthName(mo.month)) + '</h3>' +
+            '<p class="pmc-sub">7-day routine · one rest day</p>' +
+            '<div class="pmc-progress"><div class="pmc-bar" style="width:' + pct + '%"></div></div>' +
+            '<span class="pmc-meta">' + p.done + ' of ' + p.total + ' days</span></a>';
+    },
+
     // ---- Progress (localStorage, per-device) ----
     _completed() { try { return JSON.parse(localStorage.getItem('abt_days_done') || '{}'); } catch (e) { return {}; } },
     dayKey(m, d) { return m + '-' + d; },

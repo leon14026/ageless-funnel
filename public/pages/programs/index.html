@@ -82,16 +82,8 @@
                 document.getElementById('empty-state').style.display = 'block';
                 return;
             }
-            wrap.innerHTML = months.map(mo => `
-                <section class="month-section">
-                    <div class="month-head">
-                        <span class="month-badge">Month ${mo.month}</span>
-                        <h2>${Programs.esc(Programs.monthLabel(mo))}</h2>
-                    </div>
-                    <div class="days-grid">
-                        ${mo.days.map(d => Programs.renderDayCard(mo.month, d)).join('')}
-                    </div>
-                </section>`).join('');
+            wrap.className = 'months-grid';
+            wrap.innerHTML = months.map(mo => Programs.renderMonthCard(mo)).join('');
         });
     </script>
 </body>
