@@ -155,7 +155,7 @@ const Programs = {
             .eq('is_published', true);
 
         if (!session?.user?.id) {
-            return { completed: 0, total: total || 16, percentage: 0 };
+            return { completed: 0, total: total || 24, percentage: 0 };
         }
 
         // Get completed weeks count
@@ -164,7 +164,7 @@ const Programs = {
             .select('*', { count: 'exact', head: true })
             .eq('user_id', session.user.id);
 
-        const totalWeeks = total || 16;
+        const totalWeeks = total || 24;
         const completedWeeks = completed || 0;
         const percentage = totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
 
