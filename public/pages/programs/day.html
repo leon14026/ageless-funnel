@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex">
+    <title>Workout Day | Ageless by Tulee</title>
+    <link rel="stylesheet" href="../../styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+</head>
+<body data-protected data-requires-entitlement>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-container">
+                <a href="../../index.html" class="logo">
+                    <span class="logo-text">Ageless</span>
+                    <span class="logo-accent">by Tulee</span>
+                </a>
+                <button class="mobile-menu-btn" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+                <ul class="nav-links">
+                    <li><a href="../home/index.html">Home</a></li>
+                    <li><a href="index.html" class="active">Programs</a></li>
+                    <li><a href="../tracker/index.html">Tracker</a></li>
+                    <li class="auth-nav"><a href="../auth/login.html" class="btn btn-nav">Sign In</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="week-page">
+        <div class="container">
+            <a href="index.html" class="back-link">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                Back to Program
+            </a>
+
+            <div class="week-header" id="day-header"><div class="loading-spinner">Loading…</div></div>
+
+            <div class="week-content" id="day-content" style="display: none;">
+                <div class="workout-section" style="grid-column: 1 / -1;">
+                    <div class="blocks-list" id="blocks-list"></div>
+                </div>
+            </div>
+
+            <div class="week-nav" id="day-nav" style="display: none;">
+                <a href="#" class="btn btn-secondary" id="prev-day" style="visibility: hidden;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+                    Previous Day
+                </a>
+                <button class="btn btn-primary" id="complete-btn">Mark day complete</button>
+                <a href="#" class="btn btn-secondary" id="next-day" style="visibility: hidden;">
+                    Next Day
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <div class="error-state" id="error-state" style="display: none;">
+                <span class="error-icon">⚠️</span>
+                <h3>Day not found</h3>
+                <p>This day isn't part of the program.</p>
+                <a href="index.html" class="btn btn-primary">Back to Program</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer footer-minimal">
+        <div class="container"><p>&copy; 2026 Ageless by Tulee. All rights reserved.</p></div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script src="../../js/payment.js"></script>
+    <script src="../../js/auth-guard.js"></script>
+    <script src="../../js/programs.js"></script>
+    <script>
+        let MONTH = 1, DAY = 1, DAYDATA = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const p = new URLSearchParams(location.search);
+            MONTH = parseInt(p.get('month'), 10) || 1;
+            DAY = parseInt(p.get('day'), 10) || 1;
+            await Programs.load();
+
+            const mo = Programs.getMonth(MONTH);
+            const d = Programs.getDay(MONTH, DAY);
+            if (!mo || !d) {
+                document.getElementById('day-header').style.display = 'none';
+                document.getElementById('error-state').style.display = 'block';
+                return;
+            }
+            DAYDATA = d;
+            document.title = `Month ${MONTH} · Day ${DAY} | Ageless by Tulee`;
+
+            document.getElementById('day-header').innerHTML =
+                `<span class="week-badge">Month ${MONTH} · Day ${DAY}</span>` +
+                `<h1>${Programs.esc(d.theme || ('Day ' + DAY))}</h1>` +
+                `<p class="week-intro">${Programs.esc(Programs.monthLabel(mo))}</p>`;
+
+            const list = document.getElementById('blocks-list');
+            if (d.rest) {
+                list.innerHTML =
+                    '<div class="rest-panel"><span class="rest-badge">Rest day</span>' +
+                    '<h3>Recovery &amp; gentle movement</h3><p>' +
+                    (Programs.esc(d.note) || 'Take it easy today — a light walk, hydration, good sleep, and gentle daily movement. Rest is where your body rebuilds.') +
+                    '</p></div>';
+                document.getElementById('complete-btn').style.display = 'none';
+            } else {
+                list.innerHTML = d.blocks.map(b => Programs.renderBlock(b)).join('');
+                setupComplete();
+            }
+            setupNav(mo);
+
+            document.getElementById('day-content').style.display = 'block';
+            document.getElementById('day-nav').style.display = 'flex';
+        });
+
+        function setupComplete() {
+            const btn = document.getElementById('complete-btn');
+            const paint = () => {
+                const done = Programs.isDayComplete(MONTH, DAY);
+                btn.textContent = done ? 'Completed ✓' : 'Mark day complete';
+                btn.classList.toggle('btn-completed', done);
+                btn.classList.toggle('btn-primary', !done);
+            };
+            paint();
+            btn.addEventListener('click', () => {
+                const done = Programs.isDayComplete(MONTH, DAY);
+                Programs.setDayComplete(MONTH, DAY, !done);
+                paint();
+                if (!done && DAY < 7) {
+                    if (confirm('Nice work! Go to the next day?')) location.href = `day.html?month=${MONTH}&day=${DAY + 1}`;
+                }
+            });
+        }
+
+        function setupNav(mo) {
+            const prev = document.getElementById('prev-day');
+            const next = document.getElementById('next-day');
+            if (DAY > 1) { prev.href = `day.html?month=${MONTH}&day=${DAY - 1}`; prev.style.visibility = 'visible'; }
+            if (DAY < 7) { next.href = `day.html?month=${MONTH}&day=${DAY + 1}`; next.style.visibility = 'visible'; }
+        }
+    </script>
+</body>
+</html>

@@ -48,17 +48,18 @@
         if (!card || !list) return;
 
         var counts = await Promise.all([
-            countRows('user_program_progress'),
             countRows('food_entries'),
             countRows('progress_entries')
         ]);
+        var workoutDone = false;
+        try { workoutDone = Object.keys(JSON.parse(localStorage.getItem('abt_days_done') || '{}')).length > 0; } catch (e) {}
         var profileDone = !!(currentUser.user_metadata && currentUser.user_metadata.full_name);
 
         var items = [
             { done: !!goals, label: 'Set your nutrition goals', action: 'tour', cta: 'Set goals' },
-            { done: counts[0] > 0, label: 'Do your first workout week', href: '../programs/index.html', cta: 'Open Programs' },
-            { done: counts[1] > 0, label: 'Log your first meal', href: '../tracker/index.html#nutrition-section', cta: 'Log food' },
-            { done: counts[2] > 0, label: 'Add your starting measurements', href: '../tracker/index.html', cta: 'Add entry' },
+            { done: workoutDone, label: 'Do your first workout', href: '../programs/index.html', cta: 'Open Programs' },
+            { done: counts[0] > 0, label: 'Log your first meal', href: '../tracker/index.html#nutrition-section', cta: 'Log food' },
+            { done: counts[1] > 0, label: 'Add your starting measurements', href: '../tracker/index.html', cta: 'Add entry' },
             { done: profileDone, label: 'Complete your profile', href: '../account/profile.html', cta: 'Edit profile' }
         ];
 

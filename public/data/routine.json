@@ -1,0 +1,1138 @@
+{
+  "months": [
+    {
+      "month": 1,
+      "title": "Routine 1 - Month 1 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Gentle Stretch & Flow",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Old Warm-Up Stretch - Red Tree, Tariqul",
+              "duration": "16 min",
+              "page": "P-2",
+              "category": "warmup"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Low-Impact Cardio + Core",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Quick Body Fix - Wooden floor, Asifur",
+              "duration": "10 min",
+              "page": "P-58",
+              "category": "workout"
+            },
+            {
+              "name": "Toned Abs - Music Garden, Asifur (extra)",
+              "duration": "7 min",
+              "page": "P-4, 34",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Lower Body Foundation",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Legs Beginner - Yellow tree, Tasrin",
+              "duration": "11 min",
+              "page": "P-12",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Lower Stretch - 3 Trees, Tasrin",
+              "duration": "7 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Band Tone + Gentle Upper Release",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Band Tone & Travel - Wooden floor, Tariqul",
+              "duration": "11 min",
+              "page": "P-57",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Upper Stretch - 3 Trees, Tasrin",
+              "duration": "3 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "Partner Low-Impact Cardio",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Mom & Son Fun Aerobics - Toronto Island, Tariqul",
+              "duration": "22 min",
+              "page": "P-32",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Chair Foundation Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - 20 Min Chair Workout",
+              "duration": "20 min",
+              "page": "P-25",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "month": 2,
+      "title": "Routine 2 - Month 2 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Chair Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Chair Workout - Toronto Island, Saif",
+              "duration": "26 min",
+              "page": "P-18",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Full Body + Standing Core",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Quick Total Body / Burn & Tone - Toronto Island, Asifur (extra)",
+              "duration": "10 min",
+              "page": "P-28",
+              "category": "workout"
+            },
+            {
+              "name": "Standing Abs & Waist Trimmer - Home park, Asifur",
+              "duration": "13 min",
+              "page": "P-4, 34",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Lower Body Foundation",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Legs Intermediate - Yellow tree, Tasrin",
+              "duration": "10 min",
+              "page": "P-12",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Lower Stretch - 3 Trees, Tasrin",
+              "duration": "7 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Upper Body Band + Gentle Stretch",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "[UNEDITED] Band Upper Body - Red tree",
+              "duration": "~10 min",
+              "page": "P-40",
+              "category": "workout"
+            },
+            {
+              "name": "[UNEDITED] Stretch (can be cool down) - Toronto Island",
+              "duration": "~13 min",
+              "page": "P-28",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Kick Aerobics with Mom & Son",
+              "duration": "24 min",
+              "page": "P-26",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Controlled Core Recovery",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Lying Abs - High Park, Tariqul",
+              "duration": "17 min",
+              "page": "P-6",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "month": 3,
+      "title": "Routine 3 - Month 3 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Arms + Beginner Cardio",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Arms Dumbbell - 3 Trees, Tariqul",
+              "duration": "10 min",
+              "page": "P-8",
+              "category": "workout"
+            },
+            {
+              "name": "Beginner Aerobics - Toronto Island, Tasrin",
+              "duration": "16 min",
+              "page": "P-43",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Chair Endurance",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Band Upper Body - 3 Trees",
+              "duration": "20 min",
+              "page": "P-10, E-19",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Lower Body + Stability Stretch",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Legs Advance - Yellow tree, Tasrin",
+              "duration": "10 min",
+              "page": "P-12",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Lower Stretch - 3 Trees, Tasrin",
+              "duration": "7 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Upper Body Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Chest - Campus, Tariqul",
+              "duration": "15 min",
+              "page": "P-49",
+              "category": "workout"
+            },
+            {
+              "name": "Book - Seated Arms",
+              "duration": "16 min",
+              "page": "P-57",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "Partner Burn",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Mom & Son Burn Fat - Yellow tree, Saif",
+              "duration": "15 min",
+              "page": "P-45",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Chair Recovery Strength + Upper Release",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Chair Workout for Elders (bonus)",
+              "duration": "21 min",
+              "page": "P-97",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Upper Stretch - 3 Trees, Tasrin",
+              "duration": "3 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "month": 4,
+      "title": "Routine 4 - Month 4 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Progressive Cardio",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Progressive Aerobics - Toronto Island, Tasrin",
+              "duration": "25 min",
+              "page": "P-24",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Core Focus",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Toned Abs - Music Garden, Asifur (extra)",
+              "duration": "7 min",
+              "page": "P-4, 34",
+              "category": "workout"
+            },
+            {
+              "name": "Lying Abs - High Park, Tariqul",
+              "duration": "17 min",
+              "page": "P-6",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Lower Body Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Legs",
+              "duration": "25 min",
+              "page": "P-58",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Full Body + Upper Release",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Total Body Tone - Music Garden, Asifur",
+              "duration": "17 min",
+              "page": "P-4, 34",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Upper Stretch - 3 Trees, Tasrin",
+              "duration": "3 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "Band + Seated Arms",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Band Shoulder & Legs - High Park",
+              "duration": "~9 min",
+              "page": "P-36",
+              "category": "workout"
+            },
+            {
+              "name": "Book - Seated Arms or Book - Standing Arms",
+              "duration": "16 min or 17 min",
+              "page": "P-57",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Upper Body Recovery Stretch",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Upper Body Stretching",
+              "duration": "28 min",
+              "page": "P-69",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "month": 5,
+      "title": "Routine 5 - Month 5 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Shoulder + Band Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Band Shoulder & Butt - Red tree, Tasrin",
+              "duration": "16 min",
+              "page": "P-40",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Upper Stretch - 3 Trees, Tasrin",
+              "duration": "3 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Legs + Core",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Legs & Core - Medical Bench, Asifur",
+              "duration": "20 min",
+              "page": "P-52,53",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Arms + Core Control",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Standing Arms",
+              "duration": "17 min",
+              "page": "P-57",
+              "category": "workout"
+            },
+            {
+              "name": "Upper Body & Core - Myhal",
+              "duration": "~12 min",
+              "page": "P-50",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Full Body + Gentle Stretch",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "[UNEDITED] Total Body Workout - Home grass",
+              "duration": "~12 min",
+              "page": "P-47",
+              "category": "workout"
+            },
+            {
+              "name": "[UNEDITED] Stretch (can be cool down) - Toronto Island",
+              "duration": "~13 min",
+              "page": "P-28",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "Partner Tabata",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Lower Body Tabata",
+              "duration": "12 min",
+              "page": "P-39",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Lower Body Recovery Stretch",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Lower Body Stretching",
+              "duration": "30 min",
+              "page": "P-62",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    },
+    {
+      "month": 6,
+      "title": "Routine 6 - Month 6 - 40+ Core Routine",
+      "description": "Women 40+ core version: strength, low-impact cardio, core, chair/recovery, and one rest day. Every workout day includes 5 Min Warm Up + 5 Min Cool Down.",
+      "days": [
+        {
+          "day": 1,
+          "theme": "Kickboxing Cardio",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Kick Boxing - Wooden floor, Tariqul",
+              "duration": "24 min",
+              "page": "P-54",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 2,
+          "theme": "Endurance Chair Strength - split if needed",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Chair Workout",
+              "duration": "42 min",
+              "page": "P-99",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 3,
+          "theme": "Legs + Stability",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Legs Advance - Yellow tree, Tasrin",
+              "duration": "10 min",
+              "page": "P-12",
+              "category": "workout"
+            },
+            {
+              "name": "Cool Down Lower Stretch - 3 Trees, Tasrin",
+              "duration": "7 min",
+              "page": "P-6",
+              "category": "cooldown"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 4,
+          "theme": "Lower Body Stretch Recovery",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Book - Upper Body Tabata",
+              "duration": "12 min",
+              "page": "P-45",
+              "category": "workout"
+            },
+            {
+              "name": "[UNEDITED] Leg Workout - Wooden floor",
+              "duration": "~7 min",
+              "page": "P-55",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 5,
+          "theme": "Arms + Band Strength",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "[UNEDITED] Shoulder & Arms - Wooden floor/Home grass",
+              "duration": "~15 min",
+              "page": "P-51",
+              "category": "workout"
+            },
+            {
+              "name": "Band Shoulder & Butt - Red tree, Tasrin",
+              "duration": "16 min",
+              "page": "P-40",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 6,
+          "theme": "Controlled Core Recovery",
+          "rest": false,
+          "note": "",
+          "blocks": [
+            {
+              "name": "5 Min Warm Up",
+              "duration": "5 min",
+              "page": "",
+              "category": "warmup"
+            },
+            {
+              "name": "Side Lying Abs - Toronto Island, Tasrin",
+              "duration": "30 min",
+              "page": "P-26",
+              "category": "workout"
+            },
+            {
+              "name": "5 Min Cool Down",
+              "duration": "5 min",
+              "page": "",
+              "category": "cooldown"
+            }
+          ]
+        },
+        {
+          "day": 7,
+          "theme": "",
+          "rest": true,
+          "note": "",
+          "blocks": []
+        }
+      ]
+    }
+  ]
+}
