@@ -62,12 +62,13 @@ const Programs = {
     renderBlock(block) {
         const url = this.urlFor(block.name);
         const dur = block.duration ? '<span class="block-dur">' + this.esc(block.duration) + '</span>' : '';
+        // Client-facing: show only the category (+ duration), never the internal exercise name.
         const head = '<div class="block-head"><span class="block-cat block-cat-' + block.category + '">' +
-            this.catLabel(block.category) + '</span><h4>' + this.esc(block.name) + '</h4>' + dur + '</div>';
+            this.catLabel(block.category) + '</span>' + dur + '</div>';
         if (url) {
             const embed = this.getYouTubeEmbedUrl(url);
             return '<div class="block-card">' + head +
-                '<div class="video-container"><iframe src="' + this.esc(embed) + '" title="' + this.esc(block.name) +
+                '<div class="video-container"><iframe src="' + this.esc(embed) + '" title="' + this.catLabel(block.category) +
                 '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen loading="lazy"></iframe></div></div>';
         }
         return '<div class="block-card block-soon">' + head +
