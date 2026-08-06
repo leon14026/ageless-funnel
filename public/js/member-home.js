@@ -49,10 +49,10 @@
 
         var counts = await Promise.all([
             countRows('food_entries'),
-            countRows('progress_entries')
+            countRows('progress_entries'),
+            countRows('program_day_completions')
         ]);
-        var workoutDone = false;
-        try { workoutDone = Object.keys(JSON.parse(localStorage.getItem('abt_days_done') || '{}')).length > 0; } catch (e) {}
+        var workoutDone = counts[2] > 0;
         var profileDone = !!(currentUser.user_metadata && currentUser.user_metadata.full_name);
 
         var items = [

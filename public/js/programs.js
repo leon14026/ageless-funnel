@@ -49,16 +49,63 @@ const Programs = {
             '<span class="pmc-meta">' + p.done + ' of ' + p.total + ' days</span></a>';
     },
 
-    // ---- Progress (localStorage, per-device) ----
-    _completed() { try { return JSON.parse(localStorage.getItem('abt_days_done') || '{}'); } catch (e) { return {}; } },
+    // ---- Progress (Supabase-backed, cross-device; localStorage mirror for resilience) ----
+    _completedSet: null,
     dayKey(m, d) { return m + '-' + d; },
-    isDayComplete(m, d) { return !!this._completed()[this.dayKey(m, d)]; },
-    setDayComplete(m, d, val) {
-        const c = this._completed();
-        if (val) c[this.dayKey(m, d)] = Date.now(); else delete c[this.dayKey(m, d)];
-        localStorage.setItem('abt_days_done', JSON.stringify(c));
+    _lsKeys() { try { return Object.keys(JSON.parse(localStorage.getItem('abt_days_done') || '{}')); } catch (e) { return []; } },
+    _lsMirror() { try { const o = {}; this._completedSet.forEach(k => { o[k] = 1; }); localStorage.setItem('abt_days_done', JSON.stringify(o)); } catch (e) {} },
+
+    async loadCompletions() {
+        if (this._completedSet) return this._completedSet;
+        const set = new Set();
+        let session = null;
+        try { session = window.Auth ? await Auth.getSession() : null; } catch (e) {}
+        if (window.supabaseClient && session) {
+            try {
+                const res = await window.supabaseClient
+                    .from('program_day_completions')
+                    .select('month_number, day_number')
+                    .eq('user_id', session.user.id);
+                (res.data || []).forEach(r => set.add(r.month_number + '-' + r.day_number));
+                // One-time migration: push any localStorage-only completions to the cloud.
+                const extra = this._lsKeys().filter(k => !set.has(k));
+                if (extra.length) {
+                    const rows = extra.map(k => { const p = k.split('-'); return { user_id: session.user.id, month_number: parseInt(p[0], 10), day_number: parseInt(p[1], 10) }; });
+                    await window.supabaseClient.from('program_day_completions').upsert(rows, { onConflict: 'user_id,month_number,day_number' });
+                    extra.forEach(k => set.add(k));
+                }
+                this._completedSet = set;
+                this._lsMirror();
+                return set;
+            } catch (e) { /* fall back to localStorage below */ }
+        }
+        this._lsKeys().forEach(k => set.add(k));
+        this._completedSet = set;
+        return set;
     },
-    completedCount() { return Object.keys(this._completed()).length; },
+
+    isDayComplete(m, d) { return !!(this._completedSet && this._completedSet.has(this.dayKey(m, d))); },
+
+    async setDayComplete(m, d, val) {
+        if (!this._completedSet) await this.loadCompletions();
+        const key = this.dayKey(m, d);
+        if (val) this._completedSet.add(key); else this._completedSet.delete(key);
+        this._lsMirror();
+        try {
+            const session = window.Auth ? await Auth.getSession() : null;
+            if (window.supabaseClient && session) {
+                if (val) {
+                    await window.supabaseClient.from('program_day_completions')
+                        .upsert({ user_id: session.user.id, month_number: m, day_number: d }, { onConflict: 'user_id,month_number,day_number' });
+                } else {
+                    await window.supabaseClient.from('program_day_completions')
+                        .delete().eq('user_id', session.user.id).eq('month_number', m).eq('day_number', d);
+                }
+            }
+        } catch (e) { /* stays in cache + localStorage mirror */ }
+    },
+
+    completedCount() { return this._completedSet ? this._completedSet.size : 0; },
     totalWorkoutDays() {
         let n = 0;
         (this._data.months || []).forEach(mo => mo.days.forEach(d => { if (!d.rest) n++; }));

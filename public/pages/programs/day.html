@@ -85,6 +85,7 @@
             DAY = parseInt(p.get('day'), 10) || 1;
             document.getElementById('back-link').href = 'month.html?month=' + MONTH;
             await Programs.load();
+            await Programs.loadCompletions();
 
             const mo = Programs.getMonth(MONTH);
             const d = Programs.getDay(MONTH, DAY);
@@ -128,9 +129,9 @@
                 btn.classList.toggle('btn-primary', !done);
             };
             paint();
-            btn.addEventListener('click', () => {
+            btn.addEventListener('click', async () => {
                 const done = Programs.isDayComplete(MONTH, DAY);
-                Programs.setDayComplete(MONTH, DAY, !done);
+                await Programs.setDayComplete(MONTH, DAY, !done);
                 paint();
                 if (!done && DAY < 7) {
                     if (confirm('Nice work! Go to the next day?')) location.href = `day.html?month=${MONTH}&day=${DAY + 1}`;
