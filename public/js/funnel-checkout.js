@@ -230,8 +230,10 @@
             const session = await window.Auth.getSession();
             const guest = document.getElementById('navCtaGuest');
             const member = document.getElementById('navCtaMember');
+            const login = document.getElementById('navCtaLogin');
             if (guest) guest.style.display = session ? 'none' : '';
             if (member) member.style.display = session ? '' : 'none';
+            if (login) login.style.display = session ? 'none' : '';
         } catch (error) {
             console.warn('Could not update funnel auth navigation:', error);
         }
