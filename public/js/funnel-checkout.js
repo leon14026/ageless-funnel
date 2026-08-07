@@ -169,6 +169,28 @@
             return { ok: true };
         }
 
+        // ---- Quiz lead capture (best-effort; never blocks the funnel) ----
+        // Saves the finished quiz + name/email gate so we keep leads who don't buy.
+        async function submitQuiz(opts) {
+            opts = opts || {};
+            if (!window.supabaseClient) return { skipped: true };
+            var email = (opts.email || '').trim();
+            if (!email) return { skipped: true };
+            var row = {
+                funnel: funnelId,
+                name: (opts.name || '').trim() || null,
+                email: email,
+                answers: opts.answers || {},
+                source: opts.source || 'quiz'
+            };
+            var res = await window.supabaseClient.from('quiz_responses').insert(row);
+            if (res.error) {
+                console.warn('Quiz response insert failed:', res.error);
+                return { error: res.error };
+            }
+            return { ok: true };
+        }
+
         async function completePayment(navigateTo) {
             if (isDemoMode()) {
                 state.payment = {
@@ -204,7 +226,8 @@
             toPaymentPayload: toPaymentPayload,
             completePayment: completePayment,
             submitPreorder: submitPreorder,
-            submitWaitlist: submitWaitlist
+            submitWaitlist: submitWaitlist,
+            submitQuiz: submitQuiz
         };
     }
 

@@ -260,6 +260,15 @@
         if (quizForm) {
             quizForm.addEventListener('submit', function (e) {
                 e.preventDefault();
+                var nameInput = quizForm.querySelector('input[type="text"]');
+                var emailInput = quizForm.querySelector('input[type="email"]');
+                var name = nameInput ? nameInput.value : '';
+                var email = emailInput ? emailInput.value : '';
+                // Best-effort lead capture — never block the results view on it.
+                try {
+                    checkout.submitQuiz({ name: name, email: email, answers: quizAnswers })
+                        .catch(function () {});
+                } catch (err) { /* no-op */ }
                 trackEvent('quiz_completed', quizAnswers);
                 updateQuizResults();
                 navigateTo('/quiz/results');
