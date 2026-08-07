@@ -28,7 +28,7 @@ CREATE POLICY "quiz_responses public insert" ON public.quiz_responses
     funnel = 'A'
     AND (name IS NULL OR char_length(name) <= 200)
     AND char_length(email) <= 320
-    AND email ~* '^[^@[:space:]]+@[^@[:space:]]+\.[^@[:space:]]+$'
+    AND email ~* '^[^@[:space:]]+@[^@[:space:]]+[.][^@[:space:]]+$'
     AND jsonb_typeof(answers) = 'object'
     AND char_length(answers::text) <= 4000
     AND (source IS NULL OR char_length(source) <= 100)
