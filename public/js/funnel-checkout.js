@@ -231,9 +231,13 @@
             const guest = document.getElementById('navCtaGuest');
             const member = document.getElementById('navCtaMember');
             const login = document.getElementById('navCtaLogin');
+            const loginM = document.getElementById('navCtaLoginMobile');
+            const memberM = document.getElementById('navCtaMemberMobile');
             if (guest) guest.style.display = session ? 'none' : '';
             if (member) member.style.display = session ? '' : 'none';
             if (login) login.style.display = session ? 'none' : '';
+            if (loginM) loginM.style.display = session ? 'none' : '';
+            if (memberM) memberM.style.display = session ? '' : 'none';
         } catch (error) {
             console.warn('Could not update funnel auth navigation:', error);
         }
