@@ -1297,6 +1297,33 @@
         initMindvalleyElements();
         initTransformationPreview();
         initWaitlistForm();
+        initHeroVideoSound();
+    }
+
+    // Hero video autoplays muted (browser rule); this button lets viewers turn sound on.
+    function initHeroVideoSound() {
+        var video = document.querySelector('.f-top-proof-video');
+        var btn = document.getElementById('heroSoundBtn');
+        if (!video || !btn) return;
+        var icon = btn.querySelector('.f-video-sound-icon');
+        var label = btn.querySelector('.f-video-sound-label');
+        function sync() {
+            var on = !video.muted;
+            btn.setAttribute('aria-pressed', String(on));
+            btn.setAttribute('aria-label', on ? 'Mute video' : 'Turn video sound on');
+            if (icon) icon.textContent = on ? '🔇' : '🔊';
+            if (label) label.textContent = on ? 'Mute' : 'Tap for sound';
+        }
+        btn.addEventListener('click', function () {
+            video.muted = !video.muted;
+            if (!video.muted) {
+                video.volume = 1;
+                var p = video.play();
+                if (p && typeof p.catch === 'function') p.catch(function () {});
+            }
+            sync();
+        });
+        sync();
     }
 
     if (document.readyState === 'loading') {

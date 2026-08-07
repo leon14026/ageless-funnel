@@ -5073,3 +5073,16 @@ body.f-mode-preorder .f-preorder-only {
 body.f-mode-preorder .f-gateway-only {
     display: none !important;
 }
+
+/* Hero video: unmute button (autoplays muted; tap to hear sound) */
+.f-top-proof-video-frame { position: relative; }
+.f-video-sound {
+    position: absolute; bottom: 0.85rem; right: 0.85rem; z-index: 3;
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    background: rgba(0, 0, 0, 0.6); color: #fff; border: none; border-radius: 999px;
+    padding: 0.45rem 0.85rem; font-size: 0.8rem; font-weight: 700; cursor: pointer;
+    -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px);
+    transition: background 0.15s;
+}
+.f-video-sound:hover { background: rgba(0, 0, 0, 0.8); }
+.f-video-sound-icon { font-size: 0.95rem; line-height: 1; }
