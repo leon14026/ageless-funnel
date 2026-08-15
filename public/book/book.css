@@ -1,0 +1,153 @@
+/* Standalone book-chapter pages for Ageless by Tulee.
+   Self-contained (no funnel/member CSS). Bengali-first typography.
+   Palette mirrors public/life-expectancy.html. */
+
+:root {
+    --color-primary: #3B1F2B;
+    --color-secondary: #9BB7A5;
+    --color-accent: #E9A7B5;
+    --color-light-bg: #FFF6F2;
+    --color-surface: #FFFFFF;
+    --color-text: #3B3B3B;
+    --color-text-secondary: #5A5A5A;
+    --color-text-muted: #8A8A8A;
+    --color-border: #E8E4DF;
+    --color-border-light: #F0ECE8;
+    --shadow-sm: 0 4px 16px rgba(59, 31, 43, 0.08);
+    --shadow-md: 0 14px 34px rgba(59, 31, 43, 0.12);
+    --radius-md: 12px;
+    --radius-lg: 18px;
+    --radius-full: 999px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    /* Bengali-first stack; Latin wordmark falls back to Nunito. */
+    font-family: 'Noto Sans Bengali', 'Hind Siliguri', 'Nunito', system-ui, sans-serif;
+    color: var(--color-text);
+    background:
+        radial-gradient(circle at top left, rgba(233, 167, 181, 0.22), transparent 34rem),
+        linear-gradient(180deg, #FFF6F2 0%, #F8F1EE 100%);
+    min-height: 100vh;
+}
+
+a { color: inherit; text-decoration: none; }
+
+.book-wrap {
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 2rem 1.25rem 4rem;
+}
+
+/* ---- Brand header ---- */
+.book-brand {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0.5rem 0 2rem;
+}
+.book-brand img { height: 40px; width: auto; display: block; }
+.book-brand span {
+    font-family: 'Playfair Display', Georgia, serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    letter-spacing: 0.01em;
+}
+
+/* ---- Chapter heading ---- */
+.book-eyebrow {
+    display: inline-block;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    font-weight: 700;
+    font-size: 0.95rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 1rem;
+}
+.book-title {
+    font-size: clamp(1.5rem, 4.5vw, 2.25rem);
+    line-height: 1.35;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin: 0 0 1.75rem;
+}
+
+/* ---- Video blocks ---- */
+.book-videos { display: grid; gap: 1.5rem; }
+
+.book-video {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+}
+.book-video-frame {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    background: #000;
+}
+.book-video-frame iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Coming-soon placeholder (blank URL) */
+.book-soon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    aspect-ratio: 16 / 9;
+    background:
+        linear-gradient(180deg, #FFFDFC 0%, #FBF3F0 100%);
+    color: var(--color-text-secondary);
+    text-align: center;
+    padding: 1rem;
+}
+.book-soon-icon { font-size: 2rem; }
+.book-soon-title { font-weight: 700; color: var(--color-primary); font-size: 1.15rem; }
+.book-soon-sub { font-size: 0.9rem; color: var(--color-text-muted); }
+
+/* ---- Soft CTA ---- */
+.book-cta {
+    margin-top: 2.75rem;
+    text-align: center;
+}
+.book-cta a {
+    display: inline-block;
+    background: var(--color-primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 1.05rem;
+    padding: 0.85rem 1.6rem;
+    border-radius: var(--radius-full);
+    box-shadow: var(--shadow-md);
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.book-cta a:hover { transform: translateY(-2px); box-shadow: 0 18px 40px rgba(59, 31, 43, 0.18); }
+
+.book-footer {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
+}
+
+.book-loading, .book-error {
+    text-align: center;
+    color: var(--color-text-muted);
+    padding: 3rem 1rem;
+}
