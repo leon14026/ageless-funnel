@@ -3,14 +3,34 @@
 // stores it in public.bkash_payments (idempotent by TrxID); a DB trigger reconciles it
 // against pending pre-orders (TrxID + EXACT amount) and flips matches to 'verified'.
 //
+// Self-contained (no shared imports) so it can be pasted into the Supabase dashboard editor.
+// Deploy with "Enforce JWT verification" OFF -- auth is the x-ingest-secret header below.
+//
 // Call: POST /functions/v1/ingest-bkash
 //   headers: x-ingest-secret: <BKASH_INGEST_SECRET>, Content-Type: application/json
 //   body:    { "message": "<the raw bKash SMS text>" }
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { corsHeaders, json, requireEnv } from "../_shared/http.ts";
 
-// Parse a bKash payment SMS. Tuned to the common "You have received Tk N from 01... TrxID XXX at ..."
-// shape; refine these regexes against a real sample if a field comes back null.
+const corsHeaders = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-ingest-secret",
+};
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function requireEnv(name: string) {
+  const value = Deno.env.get(name);
+  if (!value) throw new Error(`Missing ${name}`);
+  return value;
+}
+
+// Parse a bKash payment SMS. Verified against a real sample:
+// "You have received Tk 5,000.00 from 01727217767. Fee Tk 0.00. Balance Tk 15,607.03. TrxID CI141ZCZBA at ..."
 function parseBkashSms(raw: string) {
   const text = raw.replace(/\s+/g, " ").trim();
 
@@ -18,7 +38,7 @@ function parseBkashSms(raw: string) {
   const trxMatch = text.match(/TrxID[:\s]+([A-Za-z0-9]{6,15})/i);
   const trxId = trxMatch ? trxMatch[1].toUpperCase() : null;
 
-  // Amount: the first "Tk <number>" that follows the word "received" (avoids Fee/Balance amounts).
+  // Amount: the first "Tk <number>" that follows "received" (skips Fee/Balance amounts).
   let amount: number | null = null;
   const amtMatch = text.match(/received(?:\s+payment)?(?:\s+of)?\s+Tk\.?\s*([\d,]+(?:\.\d{1,2})?)/i);
   if (amtMatch) {
