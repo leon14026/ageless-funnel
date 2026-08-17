@@ -72,6 +72,74 @@ async function notifyEmail(subject: string, text: string) {
   }
 }
 
+function addMonths(date: Date, months: number) {
+  const d = new Date(date);
+  d.setMonth(d.getMonth() + months);
+  return d;
+}
+
+const TIER_MONTHS: Record<string, number> = { "1": 1, "3": 3, "6": 6 };
+
+// Find the auth user for this email, or invite them (sends the "set your password" email).
+// Mirrors supabase/functions/payment-ipn/index.ts:findOrInviteUser.
+// deno-lint-ignore no-explicit-any
+async function findOrInviteUser(supabase: any, email: string, preorderId: string) {
+  let page = 1;
+  while (true) {
+    const { data, error } = await supabase.auth.admin.listUsers({ page, perPage: 1000 });
+    if (error) throw error;
+    const existing = data.users.find((u: any) => u.email?.toLowerCase() === email);
+    if (existing) return existing;
+    if (data.users.length < 1000) break;
+    page += 1;
+  }
+  const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
+    data: { preorder_id: preorderId },
+    redirectTo: "https://agelessbytulee.com/pages/auth/login.html",
+  });
+  if (error) throw error;
+  if (!data.user) throw new Error("Could not create the invited user.");
+  return data.user;
+}
+
+// Grant access for a verified pre-order: create/invite the account + an access entitlement,
+// then flip the pre-order to 'activated'. Idempotent (one entitlement per pre-order).
+// deno-lint-ignore no-explicit-any
+async function grantAccess(supabase: any, preorderId: string) {
+  const { data: pre } = await supabase.from("preorders")
+    .select("id, email, tier, status").eq("id", preorderId).single();
+  if (!pre) return { granted: false, reason: "preorder not found" };
+  if (pre.status !== "verified") return { granted: false, reason: `status ${pre.status}` };
+
+  const email = String(pre.email || "").toLowerCase().trim();
+  if (!email) return { granted: false, reason: "no email" };
+  const months = TIER_MONTHS[String(pre.tier)] ?? 1;
+
+  const user = await findOrInviteUser(supabase, email, pre.id);
+
+  // One entitlement per pre-order (order_id links back). Skip if it already exists.
+  const { data: existing } = await supabase.from("access_entitlements")
+    .select("id").eq("order_id", pre.id).limit(1);
+  if (!existing || existing.length === 0) {
+    const now = new Date();
+    const { error: entErr } = await supabase.from("access_entitlements").insert({
+      user_id: user.id,
+      customer_email: email,
+      status: "active",
+      starts_at: now.toISOString(),
+      ends_at: addMonths(now, months).toISOString(),
+      source: "preorder",
+      order_id: pre.id,
+    });
+    if (entErr) return { granted: false, reason: `entitlement: ${entErr.message}` };
+  }
+
+  await supabase.from("preorders").update({ status: "activated" })
+    .eq("id", pre.id).eq("status", "verified");
+
+  return { granted: true, user_id: user.id, months };
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -123,6 +191,18 @@ Deno.serve(async (request) => {
       preorderStatus = pre?.status ?? null;
     }
 
+    // Auto-grant access on a fresh match (common case: SMS arrives after the pre-order).
+    let grant: unknown = null;
+    if (isNew && pay?.status === "matched" && pay?.matched_preorder_id) {
+      try {
+        grant = await grantAccess(supabase, pay.matched_preorder_id);
+        if ((grant as { granted?: boolean })?.granted) preorderStatus = "activated";
+      } catch (error) {
+        console.error("grant failed:", error);
+        grant = { granted: false, reason: "exception" };
+      }
+    }
+
     // Email alert on a newly-received payment.
     if (isNew) {
       const amountStr = (pay?.amount_bdt ?? parsed.amount) ?? "?";
@@ -149,6 +229,7 @@ Deno.serve(async (request) => {
       payment_status: pay?.status ?? "unmatched",
       matched: pay?.status === "matched",
       preorder_status: preorderStatus,
+      grant,
     });
   } catch (error) {
     console.error(error);
