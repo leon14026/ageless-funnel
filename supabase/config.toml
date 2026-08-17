@@ -1,2 +1,5 @@
 [functions.payment-ipn]
 verify_jwt = false
+
+[functions.ingest-bkash]
+verify_jwt = false
