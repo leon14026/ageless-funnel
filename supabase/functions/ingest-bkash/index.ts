@@ -95,7 +95,9 @@ async function findOrInviteUser(supabase: any, email: string, preorderId: string
   }
   const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
     data: { preorder_id: preorderId },
-    redirectTo: "https://agelessbytulee.com/pages/auth/login.html",
+    // Invited users have no password yet -> land on the set-password page (same one the
+    // "forgot password" flow uses), then they log in. NOT the plain login page.
+    redirectTo: "https://agelessbytulee.com/pages/auth/reset-password.html",
   });
   if (error) throw error;
   if (!data.user) throw new Error("Could not create the invited user.");
