@@ -33,6 +33,25 @@ function parseBkashSms(raw: string) {
   return { trxId, amount, sender };
 }
 
+// Best-effort email alert via Resend. No-ops silently if not configured, and never
+// throws (so a mail failure can't break ingestion).
+async function notifyEmail(subject: string, text: string) {
+  const key = Deno.env.get("RESEND_API_KEY");
+  const to = Deno.env.get("NOTIFY_EMAIL");
+  if (!key || !to) return;
+  const from = Deno.env.get("RESEND_FROM") || "Ageless Alerts <onboarding@resend.dev>";
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, subject, text }),
+    });
+    if (!res.ok) console.error("email send failed:", res.status, await res.text());
+  } catch (error) {
+    console.error("email error:", error);
+  }
+}
+
 Deno.serve(async (request) => {
   if (request.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
   if (request.method !== "POST") return json({ error: "Method not allowed" }, 405);
@@ -70,6 +89,7 @@ Deno.serve(async (request) => {
       console.error("bkash insert failed:", insErr);
       return json({ error: "Could not store payment" }, 500);
     }
+    const isNew = !insErr; // false when this SMS was already ingested (avoids duplicate alerts)
 
     // Read back the (possibly now-matched) row + the linked pre-order status.
     const { data: pay } = await supabase.from("bkash_payments")
@@ -81,6 +101,25 @@ Deno.serve(async (request) => {
       const { data: pre } = await supabase.from("preorders")
         .select("status").eq("id", pay.matched_preorder_id).single();
       preorderStatus = pre?.status ?? null;
+    }
+
+    // Email alert on a newly-received payment.
+    if (isNew) {
+      const amountStr = (pay?.amount_bdt ?? parsed.amount) ?? "?";
+      const status = pay?.status ?? "unmatched";
+      await notifyEmail(
+        `bKash: Tk ${amountStr} received from ${parsed.sender ?? "unknown"}`,
+        [
+          "You received a bKash payment.",
+          "",
+          `Amount:  Tk ${amountStr}`,
+          `From:    ${parsed.sender ?? "unknown"}`,
+          `TrxID:   ${parsed.trxId}`,
+          `Status:  ${status}${status === "matched" ? " (a pending pre-order was auto-verified)" : ""}`,
+          "",
+          `Raw SMS: ${message}`,
+        ].join("\n"),
+      );
     }
 
     return json({
