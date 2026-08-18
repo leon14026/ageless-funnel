@@ -573,7 +573,9 @@
         // --- Manual pre-order payment UI (preorder mode) ---
         if (window.CONFIG && window.CONFIG.PAYMENT) {
             var bkashEl = document.getElementById('bkashNumber');
-            if (bkashEl && window.CONFIG.PAYMENT.BKASH_NUMBER) bkashEl.textContent = window.CONFIG.PAYMENT.BKASH_NUMBER;
+            // Test plan sends to a separate bKash number so real-customer payments stay clean.
+            var bkashNum = checkoutState.selectedTier === 'test' ? '01977217767' : window.CONFIG.PAYMENT.BKASH_NUMBER;
+            if (bkashEl && bkashNum) bkashEl.textContent = bkashNum;
             var bankEl = document.getElementById('bankDetails');
             if (bankEl && window.CONFIG.PAYMENT.BANK_DETAILS) bankEl.textContent = window.CONFIG.PAYMENT.BANK_DETAILS;
         }
