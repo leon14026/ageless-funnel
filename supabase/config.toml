@@ -3,3 +3,6 @@ verify_jwt = false
 
 [functions.ingest-bkash]
 verify_jwt = false
+
+[functions.grant-access]
+verify_jwt = false
