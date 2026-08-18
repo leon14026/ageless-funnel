@@ -157,6 +157,12 @@ Deno.serve(async (request) => {
     const message = String(body?.message ?? body?.text ?? "").trim();
     if (!message) return json({ error: "Missing message" }, 400);
 
+    // Only ingest money RECEIVED. Skip outgoing/other bKash SMS (bill payment, send money,
+    // cash out, etc.) even if the Shortcut forwards them -- they contain a TrxID too.
+    if (!/received/i.test(message)) {
+      return json({ stored: false, skipped: true, reason: "not a received-payment SMS" }, 200);
+    }
+
     const parsed = parseBkashSms(message);
     if (!parsed.trxId) {
       return json({ error: "Could not find a TrxID in the message", stored: false, message }, 422);
