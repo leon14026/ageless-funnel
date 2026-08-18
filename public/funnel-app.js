@@ -542,6 +542,16 @@
         var tier = getHashTier();
         if (tier) checkoutState.selectedTier = tier;
 
+        // Hidden test plan (e.g. #/checkout?tier=test): hide the real-tier picker so the
+        // tester can't accidentally switch to a full-price plan.
+        if (['1', '3', '6'].indexOf(checkoutState.selectedTier) === -1) {
+            var sel = document.getElementById('checkoutTierSelector');
+            if (sel) {
+                sel.style.display = 'none';
+                if (sel.previousElementSibling) sel.previousElementSibling.style.display = 'none';
+            }
+        }
+
         document.querySelectorAll('.checkout-tier-option').forEach(function (option) {
             option.addEventListener('click', function () {
                 checkoutState.selectedTier = option.getAttribute('data-tier');
