@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Admin | Ageless by Tulee</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root{
+            --primary:#3B1F2B; --accent:#E9A7B5; --bg:#FBF5F2; --surface:#fff;
+            --text:#3B3B3B; --muted:#8A8A8A; --border:#ECE6E1;
+            --green:#16A34A; --amber:#D97706; --blue:#2563EB; --red:#DC2626; --grey:#9CA3AF;
+            --radius:14px; --shadow:0 6px 20px rgba(59,31,43,.07);
+        }
+        *{box-sizing:border-box}
+        body{margin:0;font-family:'Nunito',system-ui,sans-serif;color:var(--text);background:var(--bg)}
+        a{color:inherit}
+        .wrap{max-width:1200px;margin:0 auto;padding:1.5rem 1.25rem 4rem}
+        .top{display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap;margin-bottom:1.5rem}
+        .brand{font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:700;color:var(--primary)}
+        .brand small{font-family:'Nunito';font-weight:600;color:var(--muted);font-size:.8rem;display:block}
+        .top-actions{display:flex;align-items:center;gap:.75rem;font-size:.85rem;color:var(--muted)}
+        .btn{border:1px solid var(--border);background:var(--surface);color:var(--primary);font:inherit;font-weight:700;
+             font-size:.85rem;padding:.5rem .9rem;border-radius:999px;cursor:pointer}
+        .btn:hover{border-color:var(--accent)}
+        .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.9rem;margin-bottom:1.75rem}
+        .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;box-shadow:var(--shadow)}
+        .card .n{font-size:1.7rem;font-weight:800;color:var(--primary);line-height:1.1}
+        .card .l{font-size:.78rem;color:var(--muted);margin-top:.25rem;font-weight:600;text-transform:uppercase;letter-spacing:.02em}
+        .card.attn .n{color:var(--amber)}
+        h2{font-size:1.05rem;color:var(--primary);margin:2rem 0 .75rem}
+        .panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;margin-bottom:1rem}
+        .scroll{overflow-x:auto}
+        table{width:100%;border-collapse:collapse;font-size:.84rem;min-width:640px}
+        th,td{text-align:left;padding:.6rem .8rem;border-bottom:1px solid var(--border);white-space:nowrap}
+        th{background:#FAF6F4;color:var(--muted);font-weight:700;text-transform:uppercase;font-size:.7rem;letter-spacing:.03em}
+        td.wrap-col{white-space:normal;max-width:280px}
+        tr:last-child td{border-bottom:none}
+        .badge{display:inline-block;padding:.15rem .55rem;border-radius:999px;font-size:.72rem;font-weight:800;text-transform:uppercase}
+        .b-green{background:rgba(22,163,74,.12);color:var(--green)}
+        .b-amber{background:rgba(217,119,6,.14);color:var(--amber)}
+        .b-blue{background:rgba(37,99,235,.12);color:var(--blue)}
+        .b-red{background:rgba(220,38,38,.12);color:var(--red)}
+        .b-grey{background:rgba(156,163,175,.18);color:#6B7280}
+        .empty{padding:1.5rem;text-align:center;color:var(--muted);font-size:.85rem}
+        .gate{max-width:420px;margin:5rem auto;text-align:center;background:var(--surface);border:1px solid var(--border);
+              border-radius:var(--radius);padding:2rem;box-shadow:var(--shadow)}
+        .gate h1{font-family:'Playfair Display',serif;color:var(--primary)}
+        .muted{color:var(--muted)}
+        .two{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        @media(max-width:800px){.two{grid-template-columns:1fr}}
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap" style="display:none">
+        <div class="top">
+            <div class="brand">Ageless Admin <small id="who"></small></div>
+            <div class="top-actions">
+                <span id="updated"></span>
+                <button class="btn" id="refresh">↻ Refresh</button>
+                <button class="btn" id="logout">Log out</button>
+            </div>
+        </div>
+
+        <div class="cards" id="cards"></div>
+
+        <h2>⚠️ Needs attention</h2>
+        <div class="panel"><div class="scroll"><table id="attn-table"></table></div></div>
+
+        <h2>Pre-orders</h2>
+        <div class="panel"><div class="scroll"><table id="pre-table"></table></div></div>
+
+        <h2>bKash payments (ledger)</h2>
+        <div class="panel"><div class="scroll"><table id="pay-table"></table></div></div>
+
+        <h2>Members (entitlements)</h2>
+        <div class="panel"><div class="scroll"><table id="ent-table"></table></div></div>
+
+        <div class="two">
+            <div><h2>Waitlist</h2><div class="panel"><div class="scroll"><table id="wait-table"></table></div></div></div>
+            <div><h2>Quiz leads</h2><div class="panel"><div class="scroll"><table id="quiz-table"></table></div></div></div>
+        </div>
+    </div>
+
+    <div id="gate" class="gate" style="display:none">
+        <h1>Admin</h1>
+        <p id="gate-msg" class="muted">Checking access…</p>
+        <p><a class="btn" href="../auth/login.html">Go to login</a></p>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../../js/config.js"></script>
+    <script src="../../js/supabase-client.js"></script>
+    <script src="../../js/auth.js"></script>
+    <script>
+    (function(){
+        'use strict';
+        var sb = window.supabaseClient;
+
+        function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+        function tk(n){return n==null?'—':'৳'+Number(n).toLocaleString('en-US');}
+        function dt(s){if(!s)return '—';var d=new Date(s);return d.toLocaleString('en-GB',{day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});}
+        function gate(msg){document.getElementById('app').style.display='none';var g=document.getElementById('gate');g.style.display='block';document.getElementById('gate-msg').textContent=msg;}
+
+        var STATUS={
+            pending:'b-amber',verified:'b-blue',activated:'b-green',rejected:'b-red',
+            matched:'b-green',unmatched:'b-grey',amount_mismatch:'b-red',active:'b-green',expired:'b-grey',revoked:'b-red'
+        };
+        function badge(s){return '<span class="badge '+(STATUS[s]||'b-grey')+'">'+esc(s)+'</span>';}
+
+        function table(el, cols, rows, render){
+            var head='<tr>'+cols.map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr>';
+            if(!rows.length){el.innerHTML=head;el.parentNode.parentNode.querySelector('table').insertAdjacentHTML('afterend','');
+                el.innerHTML=head+'<tr><td colspan="'+cols.length+'"><div class="empty">Nothing here yet.</div></td></tr>';return;}
+            el.innerHTML=head+rows.map(render).join('');
+        }
+
+        async function load(){
+            document.getElementById('updated').textContent='Loading…';
+            var res=await Promise.all([
+                sb.from('preorders').select('*').order('created_at',{ascending:false}),
+                sb.from('bkash_payments').select('*').order('created_at',{ascending:false}),
+                sb.from('access_entitlements').select('*').order('created_at',{ascending:false}),
+                sb.from('waitlist').select('*').order('created_at',{ascending:false}),
+                sb.from('quiz_responses').select('*').order('created_at',{ascending:false})
+            ]);
+            var pre=res[0].data||[], pay=res[1].data||[], ent=res[2].data||[], wait=res[3].data||[], quiz=res[4].data||[];
+            var now=Date.now();
+
+            var collected=pre.filter(function(p){return p.status==='verified'||p.status==='activated';})
+                             .reduce(function(a,p){return a+Number(p.amount_bdt||0);},0);
+            var activeMembers=ent.filter(function(e){return e.status==='active'&&new Date(e.ends_at).getTime()>=now;}).length;
+            var pending=pre.filter(function(p){return p.status==='pending';}).length;
+            var awaiting=pre.filter(function(p){return p.status==='verified';}).length;
+            var payFlags=pay.filter(function(p){return p.status==='unmatched'||p.status==='amount_mismatch';}).length;
+
+            document.getElementById('cards').innerHTML=[
+                ['n',tk(collected),'Collected (verified+)'],
+                ['n',activeMembers,'Active members'],
+                [pending?'attn':'n',pending,'Pending pre-orders'],
+                [awaiting?'attn':'n',awaiting,'Awaiting activation'],
+                [payFlags?'attn':'n',payFlags,'Payments to review'],
+                ['n',wait.length,'Waitlist'],
+                ['n',quiz.length,'Quiz leads']
+            ].map(function(c){return '<div class="card '+(c[0]==='attn'?'attn':'')+'"><div class="n">'+c[1]+'</div><div class="l">'+c[2]+'</div></div>';}).join('');
+
+            // Needs attention
+            var attn=[];
+            pre.forEach(function(p){ if(p.status==='pending'||p.status==='verified')
+                attn.push({t:'Pre-order',who:p.email,detail:p.tier+' · '+tk(p.amount_bdt)+' · TrxID '+ (p.txn_reference||'—'),status:p.status,when:p.created_at});});
+            pay.forEach(function(p){ if(p.status==='unmatched'||p.status==='amount_mismatch')
+                attn.push({t:'Payment',who:p.sender_msisdn||'—',detail:tk(p.amount_bdt)+' · TrxID '+p.trx_id,status:p.status,when:p.created_at});});
+            attn.sort(function(a,b){return new Date(b.when)-new Date(a.when);});
+            table(document.getElementById('attn-table'),['Type','Who','Detail','Status','When'],attn,function(r){
+                return '<tr><td>'+r.t+'</td><td>'+esc(r.who)+'</td><td class="wrap-col">'+esc(r.detail)+'</td><td>'+badge(r.status)+'</td><td>'+dt(r.when)+'</td></tr>';});
+
+            table(document.getElementById('pre-table'),['When','Name','Email','Phone','Tier','Amount','Method','TrxID','Status'],pre,function(p){
+                return '<tr><td>'+dt(p.created_at)+'</td><td>'+esc(p.name)+'</td><td>'+esc(p.email)+'</td><td>'+esc(p.phone)+'</td><td>'+esc(p.tier)+'</td><td>'+tk(p.amount_bdt)+'</td><td>'+esc(p.payment_method)+'</td><td>'+esc(p.txn_reference||'—')+'</td><td>'+badge(p.status)+'</td></tr>';});
+
+            table(document.getElementById('pay-table'),['When','TrxID','Amount','From','Status'],pay,function(p){
+                return '<tr><td>'+dt(p.created_at)+'</td><td>'+esc(p.trx_id)+'</td><td>'+tk(p.amount_bdt)+'</td><td>'+esc(p.sender_msisdn||'—')+'</td><td>'+badge(p.status)+'</td></tr>';});
+
+            table(document.getElementById('ent-table'),['Email','Source','Status','Starts','Ends','Active now'],ent,function(e){
+                var active=e.status==='active'&&new Date(e.ends_at).getTime()>=now;
+                return '<tr><td>'+esc(e.customer_email)+'</td><td>'+esc(e.source)+'</td><td>'+badge(e.status)+'</td><td>'+dt(e.starts_at)+'</td><td>'+dt(e.ends_at)+'</td><td>'+(active?'✅':'—')+'</td></tr>';});
+
+            table(document.getElementById('wait-table'),['When','Name','Email','Phone'],wait,function(w){
+                return '<tr><td>'+dt(w.created_at)+'</td><td>'+esc(w.name)+'</td><td>'+esc(w.email)+'</td><td>'+esc(w.phone||'—')+'</td></tr>';});
+
+            table(document.getElementById('quiz-table'),['When','Name','Email','Answers'],quiz,function(q){
+                var ans=q.answers?Object.keys(q.answers).map(function(k){return k+':'+q.answers[k];}).join(', '):'';
+                return '<tr><td>'+dt(q.created_at)+'</td><td>'+esc(q.name||'—')+'</td><td>'+esc(q.email)+'</td><td class="wrap-col">'+esc(ans)+'</td></tr>';});
+
+            document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString();
+        }
+
+        document.addEventListener('DOMContentLoaded', async function(){
+            if(!sb||!window.Auth){gate('Not configured.');return;}
+            var session=await Auth.getSession();
+            if(!session){gate('Please log in as an admin.');return;}
+
+            var adm=await sb.rpc('is_admin');
+            if(adm.error||!adm.data){gate('This account is not an admin.');return;}
+
+            document.getElementById('who').textContent=session.user.email;
+            document.getElementById('gate').style.display='none';
+            document.getElementById('app').style.display='block';
+            document.getElementById('refresh').addEventListener('click',load);
+            document.getElementById('logout').addEventListener('click',async function(){await Auth.signOut();location.href='../auth/login.html';});
+            await load();
+        });
+    })();
+    </script>
+</body>
+</html>
