@@ -1441,8 +1441,8 @@
                         <span class="f-small text-secondary">✓ Progress tracking</span>
                         <span class="f-small text-secondary">✓ Personal guidance</span>
                     </div>
-                    <!-- Tier options -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; text-align: center;">
+                    <!-- Tier options (hidden: plan is chosen on the checkout page) -->
+                    <div style="display: none; grid-template-columns: 1fr 1fr 1fr; gap: 0.75rem; margin-bottom: 1rem; text-align: center;">
                         <label style="cursor: pointer; padding: 0.75rem 0.5rem; border: 2px solid var(--color-border-light); border-radius: var(--radius-md); transition: border-color 0.2s;" class="tier-option" data-tier="1">
                             <input type="radio" name="quizTier" value="1" style="display:none;">
                             <div class="f-small text-muted" style="font-weight: 600;">1 Month</div>
@@ -1465,7 +1465,7 @@
                         </label>
                     </div>
                     <p class="f-small f-demo-only" style="color: var(--color-success); font-weight: 600; margin-bottom: 0.75rem;">Demo placeholder: early-bird pricing for the first 100 members only</p>
-                    <a href="#/checkout?tier=6" class="f-btn f-btn-primary f-btn-lg" data-link id="quizResultsCta">Choose My Journey — $74.99 / &#2547;7,499</a>
+                    <a href="#/checkout" class="f-btn f-btn-primary f-btn-lg" data-link id="quizResultsCta">Go to Checkout</a>
                     <p class="f-small text-muted" style="margin-top: 0.5rem;">Secure one-time payment</p>
 
                     <!-- Enrollment counter -->
@@ -2194,7 +2194,7 @@
                                     <input type="radio" name="preorderMethod" value="bkash" checked style="width: 18px; height: 18px; accent-color: var(--color-primary);">
                                     <span style="font-weight: 700;">bKash</span>
                                 </label>
-                                <label class="f-preorder-method" style="display: flex; align-items: center; gap: 0.75rem; padding: 0.875rem 1.125rem; border: 2px solid var(--color-border-light); border-radius: var(--radius-md); cursor: pointer;">
+                                <label class="f-preorder-method" style="display: none; align-items: center; gap: 0.75rem; padding: 0.875rem 1.125rem; border: 2px solid var(--color-border-light); border-radius: var(--radius-md); cursor: pointer;">
                                     <input type="radio" name="preorderMethod" value="card" style="width: 18px; height: 18px; accent-color: var(--color-primary);">
                                     <span style="font-weight: 700;">Card / International <span class="f-small text-muted" style="font-weight: 400;">(opens at launch)</span></span>
                                 </label>
@@ -2227,7 +2227,7 @@
 
                         <button type="submit" class="f-btn f-btn-primary f-btn-lg f-btn-block" style="margin-top: 1.5rem;" id="checkoutSubmitBtn">Continue - $74.99 / ৳7,499</button>
                         <p class="text-center f-small text-muted f-gateway-only" style="margin-top: 0.75rem;">Continue to secure SSLCommerz payment. Demo mode simulates the payment step.</p>
-                        <p class="text-center f-small text-muted f-preorder-only" style="margin-top: 0.75rem;">Reserve your spot — no card needed. Card/international visitors are added to the free waitlist.</p>
+                        <p class="text-center f-small text-muted f-preorder-only" style="margin-top: 0.75rem;">Reserve your spot — no card needed.</p>
                     </form>
                 </div>
 
