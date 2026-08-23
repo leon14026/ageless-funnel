@@ -48,7 +48,7 @@
             bumpSelected: false,
             upsellAccepted: false,
             downsellAccepted: false,
-            customer: { name: '', email: '', phone: '' },
+            customer: { name: '', email: '', phone: '', address: '' },
             payment: null,
             quizAnswers: {}
         };
@@ -133,6 +133,7 @@
                 name: state.customer.name,
                 email: state.customer.email,
                 phone: state.customer.phone,
+                address: (state.customer.address || '').trim() || null,
                 tier: state.selectedTier,
                 payment_method: method,
                 txn_reference: reference

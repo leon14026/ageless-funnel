@@ -640,6 +640,8 @@
                 var name = document.getElementById('checkout-name').value;
                 var email = document.getElementById('checkout-email').value;
                 var phone = document.getElementById('checkout-phone').value;
+                var addressEl = document.getElementById('checkout-address');
+                var address = addressEl ? addressEl.value.trim() : '';
 
                 if (window.FunnelCheckout.isPreorderMode()) {
                     // Card/international visitors go to the waitlist and don't need a BD phone.
@@ -647,7 +649,11 @@
                         alert('Enter a valid Bangladeshi phone number, such as 01712345678.');
                         return;
                     }
-                    checkoutState.customer = { name: name, email: email, phone: phone };
+                    if (selectedPreorderMethod() !== 'card' && address.length < 5) {
+                        alert('Please enter your delivery address.');
+                        return;
+                    }
+                    checkoutState.customer = { name: name, email: email, phone: phone, address: address };
                     checkout.save();
                     handlePreorderSubmit();
                     return;
@@ -658,7 +664,7 @@
                     return;
                 }
 
-                checkoutState.customer = { name: name, email: email, phone: phone };
+                checkoutState.customer = { name: name, email: email, phone: phone, address: address };
                 checkout.save();
                 trackEvent('checkout_details_saved', { plan: checkoutState.selectedTier, amount: checkout.getTotals().bdt, currency: 'BDT' });
                 if (window.FunnelCheckout.isDemoMode()) navigateTo('/checkout/upsell');
