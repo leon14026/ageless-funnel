@@ -6,6 +6,7 @@
 //
 // Trigger: pg_cron -> net.http_post daily (or curl for testing). Sandbox first, then live.
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import { PDFDocument, rgb, StandardFonts } from "https://esm.sh/pdf-lib@1.17.1";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -18,9 +19,6 @@ function requireEnv(name: string) {
   const v = Deno.env.get(name);
   if (!v) throw new Error(`Missing ${name}`);
   return v;
-}
-function esc(s: unknown) {
-  return String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }
 // Pathao wants an 11-digit 01XXXXXXXXX number.
 function normalizePhone(raw: string) {
@@ -88,27 +86,76 @@ async function createPathaoOrder(base: string, token: string, storeId: number, p
   return { ok: true as const, consignment_id: body.data.consignment_id as string, order_status: body.data.order_status };
 }
 
+function toBase64(bytes: Uint8Array): string {
+  let bin = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    bin += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(bin);
+}
+
+// Build the packing list as a PDF: one bordered label block per order.
+// deno-lint-ignore no-explicit-any
+async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
+  const doc = await PDFDocument.create();
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  const bold = await doc.embedFont(StandardFonts.HelveticaBold);
+  const W = 595.28, H = 841.89, margin = 40, boxH = 120, gap = 16;
+  let page = doc.addPage([W, H]);
+  let y = H - margin;
+  page.drawText(`Ageless - bands to ship (${rows.length})`, { x: margin, y: y - 12, size: 16, font: bold });
+  y -= 46;
+
+  const wrap = (text: string, size: number, maxW: number) => {
+    const words = String(text || "").split(/\s+/);
+    const lines: string[] = [];
+    let line = "";
+    for (const w of words) {
+      const t = line ? line + " " + w : w;
+      if (font.widthOfTextAtSize(t, size) > maxW && line) { lines.push(line); line = w; } else line = t;
+    }
+    if (line) lines.push(line);
+    return lines;
+  };
+
+  rows.forEach((r, i) => {
+    if (y - boxH < margin) { page = doc.addPage([W, H]); y = H - margin; }
+    const x = margin, w = W - margin * 2;
+    page.drawRectangle({ x, y: y - boxH, width: w, height: boxH, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+    let ty = y - 20;
+    page.drawText(`Package ${i + 1}    Pathao: ${r.consignment_id ?? ""}`, { x: x + 12, y: ty, size: 9, font, color: rgb(0.4, 0.4, 0.4) });
+    ty -= 24;
+    page.drawText(String(r.name || "").slice(0, 60), { x: x + 12, y: ty, size: 16, font: bold });
+    ty -= 20;
+    page.drawText(String(r.phone || ""), { x: x + 12, y: ty, size: 13, font });
+    ty -= 20;
+    for (const ln of wrap(String(r.address || ""), 12, w - 24).slice(0, 3)) {
+      page.drawText(ln, { x: x + 12, y: ty, size: 12, font });
+      ty -= 16;
+    }
+    y -= boxH + gap;
+  });
+
+  return await doc.save();
+}
+
 // deno-lint-ignore no-explicit-any
 async function sendPackingEmail(rows: any[]) {
   const key = Deno.env.get("RESEND_API_KEY");
   const to = Deno.env.get("PACKING_EMAIL");
   if (!key || !to || rows.length === 0) return;
-  const blocks = rows.map((r, i) => `
-    <div style="border:1px solid #333;border-radius:8px;padding:12px 14px;margin:0 0 12px;font-family:Arial,sans-serif;page-break-inside:avoid;">
-      <div style="font-size:12px;color:#888;">Package ${i + 1} · Pathao: ${esc(r.consignment_id)}</div>
-      <div style="font-size:18px;font-weight:bold;margin-top:2px;">${esc(r.name)}</div>
-      <div style="font-size:15px;">${esc(r.phone)}</div>
-      <div style="font-size:15px;margin-top:4px;">${esc(r.address)}</div>
-    </div>`).join("");
-  const html = `<div style="max-width:640px;margin:0 auto;font-family:Arial,sans-serif;">
-    <h2>Ageless — bands to pack today (${rows.length})</h2>
-    <p style="color:#666;">Print, cut, and tape each block to its package.</p>${blocks}</div>`;
+
+  const content = toBase64(await buildPackingPdf(rows));
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
     body: JSON.stringify({
       from: "Ageless Fulfilment <noreply@agelessbytulee.com>",
-      to, subject: `Ageless: ${rows.length} band(s) to ship`, html,
+      to,
+      subject: `Ageless: ${rows.length} band(s) to ship`,
+      html: `<p>${rows.length} band shipment(s) today. Packing labels are attached as a PDF (packing-list.pdf).</p>`,
+      attachments: [{ filename: "packing-list.pdf", content }],
     }),
   });
   if (!res.ok) console.error("packing email failed:", res.status, await res.text());
