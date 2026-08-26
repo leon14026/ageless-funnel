@@ -99,13 +99,14 @@ function toBase64(bytes: Uint8Array): string {
 const FROM = { name: "Shape N' Shine", phone: "01841217767", address: "Banasree, Block C, Road 7, House 19" };
 
 // Build the packing list as a PDF styled like a Pathao courier sticker:
-// tracking-ID box + From (store) / To (customer) columns + COD; two labels per page.
+// tracking-ID box + From (store) / To (customer) columns + COD; FOUR labels per page.
 // deno-lint-ignore no-explicit-any
 async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const W = 595.28, H = 841.89, margin = 36, gap = 24, labelH = 360;
+  const W = 595.28, H = 841.89, margin = 30, gap = 14, perPage = 4;
+  const labelH = (H - margin * 2 - gap * (perPage - 1)) / perPage; // ~185
   const red = rgb(0.85, 0.12, 0.20);
 
   const wrap = (text: string, size: number, maxW: number) => {
@@ -122,38 +123,38 @@ async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
 
   // deno-lint-ignore no-explicit-any
   let page: any = null;
-  let slot = 2; // force a new page for the first label
+  let slot = perPage; // force a new page for the first label
 
   const drawParty = (px: number, py: number, colW: number, header: string, name: string, phone: string, address: string) => {
-    page.drawText(header, { x: px, y: py, size: 12, font: bold, color: red });
-    let ly = py - 22;
-    page.drawText(`Name: ${name}`, { x: px, y: ly, size: 11, font: bold }); ly -= 20;
-    page.drawText(`Phone: ${phone}`, { x: px, y: ly, size: 11, font: bold }); ly -= 20;
-    page.drawText("Address:", { x: px, y: ly, size: 11, font: bold }); ly -= 15;
-    for (const ln of wrap(address, 10, colW - 6).slice(0, 4)) { page.drawText(ln, { x: px, y: ly, size: 10, font }); ly -= 14; }
+    page.drawText(header, { x: px, y: py, size: 10, font: bold, color: red });
+    let ly = py - 15;
+    page.drawText(`Name: ${name}`, { x: px, y: ly, size: 9, font: bold }); ly -= 14;
+    page.drawText(`Phone: ${phone}`, { x: px, y: ly, size: 9, font: bold }); ly -= 14;
+    page.drawText("Address:", { x: px, y: ly, size: 9, font: bold }); ly -= 12;
+    for (const ln of wrap(address, 8, colW - 6).slice(0, 3)) { page.drawText(ln, { x: px, y: ly, size: 8, font }); ly -= 11; }
   };
 
   rows.forEach((r) => {
-    if (slot >= 2) { page = doc.addPage([W, H]); slot = 0; }
+    if (slot >= perPage) { page = doc.addPage([W, H]); slot = 0; }
     const x = margin, w = W - margin * 2;
     const top = H - margin - slot * (labelH + gap);
     const bottom = top - labelH;
     const cx = x + w / 2;
 
-    page.drawRectangle({ x, y: bottom, width: w, height: labelH, borderColor: rgb(0, 0, 0), borderWidth: 1.2 });
-    page.drawText("Pathao Courier", { x: x + w - 108, y: top - 22, size: 12, font: bold, color: red });
+    page.drawRectangle({ x, y: bottom, width: w, height: labelH, borderColor: rgb(0, 0, 0), borderWidth: 1 });
+    page.drawText("Pathao Courier", { x: x + w - 92, y: top - 15, size: 9, font: bold, color: red });
 
-    const tbY = top - 52;
-    page.drawRectangle({ x: x + 12, y: tbY, width: w - 24, height: 24, borderColor: rgb(0, 0, 0), borderWidth: 0.8 });
-    page.drawText(`CONSIGNMENT ID/ TRACKING ID:  ${r.consignment_id ?? ""}`, { x: x + 18, y: tbY + 8, size: 10, font: bold });
+    const tbY = top - 34;
+    page.drawRectangle({ x: x + 10, y: tbY, width: w - 20, height: 18, borderColor: rgb(0, 0, 0), borderWidth: 0.7 });
+    page.drawText(`TRACKING ID:  ${r.consignment_id ?? ""}`, { x: x + 14, y: tbY + 6, size: 8, font: bold });
 
-    page.drawLine({ start: { x: cx, y: tbY - 6 }, end: { x: cx, y: bottom + 40 }, thickness: 1, color: rgb(0, 0, 0) });
+    page.drawLine({ start: { x: cx, y: tbY - 4 }, end: { x: cx, y: bottom + 26 }, thickness: 0.8, color: rgb(0, 0, 0) });
 
-    const partyTop = tbY - 26;
-    drawParty(x + 16, partyTop, w / 2 - 30, "From ,", FROM.name, FROM.phone, FROM.address);
-    drawParty(cx + 16, partyTop, w / 2 - 30, "To,", String(r.name || ""), String(r.phone || ""), String(r.address || ""));
+    const partyTop = tbY - 16;
+    drawParty(x + 12, partyTop, w / 2 - 24, "From ,", FROM.name, FROM.phone, FROM.address);
+    drawParty(cx + 12, partyTop, w / 2 - 24, "To,", String(r.name || ""), String(r.phone || ""), String(r.address || ""));
 
-    page.drawText("Amount To Be Collected/COD:", { x: x + 16, y: bottom + 16, size: 11, font: bold });
+    page.drawText("Amount To Be Collected/COD:", { x: x + 12, y: bottom + 10, size: 8.5, font: bold });
     slot++;
   });
 
@@ -167,6 +168,14 @@ async function sendPackingEmail(rows: any[]) {
   if (!key || !to || rows.length === 0) return;
 
   const content = toBase64(await buildPackingPdf(rows));
+  const escHtml = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const items = rows.map((r) => `<li>${escHtml(r.name)}</li>`).join("");
+  const html = `<div style="font-family:Arial,sans-serif;font-size:14px;">
+    <p><strong>${rows.length} order${rows.length === 1 ? "" : "s"} to ship today.</strong></p>
+    <p>Packages (same order as the attached labels):</p>
+    <ol>${items}</ol>
+    <p>Labels attached: <strong>packing-list.pdf</strong> (4 per page).</p>
+  </div>`;
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: { "Authorization": `Bearer ${key}`, "Content-Type": "application/json" },
@@ -174,7 +183,7 @@ async function sendPackingEmail(rows: any[]) {
       from: "Ageless Fulfilment <noreply@agelessbytulee.com>",
       to,
       subject: `Ageless: ${rows.length} band(s) to ship`,
-      html: `<p>${rows.length} band shipment(s) today. Packing labels are attached as a PDF (packing-list.pdf).</p>`,
+      html,
       attachments: [{ filename: "packing-list.pdf", content }],
     }),
   });
