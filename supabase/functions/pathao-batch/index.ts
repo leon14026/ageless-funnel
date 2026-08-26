@@ -153,7 +153,7 @@ async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
     drawParty(x + 16, partyTop, w / 2 - 30, "From ,", FROM.name, FROM.phone, FROM.address);
     drawParty(cx + 16, partyTop, w / 2 - 30, "To,", String(r.name || ""), String(r.phone || ""), String(r.address || ""));
 
-    page.drawText("Amount To Be Collected/COD:  0", { x: x + 16, y: bottom + 16, size: 11, font: bold });
+    page.drawText("Amount To Be Collected/COD:", { x: x + 16, y: bottom + 16, size: 11, font: bold });
     slot++;
   });
 
