@@ -95,17 +95,18 @@ function toBase64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
-// Build the packing list as a PDF: one bordered label block per order.
+// Fixed pickup/sender details printed on every label (edit here if they change).
+const FROM = { name: "Shape N' Shine", phone: "01841217767", address: "Banasree, Block C, Road 7, House 19" };
+
+// Build the packing list as a PDF styled like a Pathao courier sticker:
+// tracking-ID box + From (store) / To (customer) columns + COD; two labels per page.
 // deno-lint-ignore no-explicit-any
 async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
   const doc = await PDFDocument.create();
   const font = await doc.embedFont(StandardFonts.Helvetica);
   const bold = await doc.embedFont(StandardFonts.HelveticaBold);
-  const W = 595.28, H = 841.89, margin = 40, boxH = 120, gap = 16;
-  let page = doc.addPage([W, H]);
-  let y = H - margin;
-  page.drawText(`Ageless - bands to ship (${rows.length})`, { x: margin, y: y - 12, size: 16, font: bold });
-  y -= 46;
+  const W = 595.28, H = 841.89, margin = 36, gap = 24, labelH = 360;
+  const red = rgb(0.85, 0.12, 0.20);
 
   const wrap = (text: string, size: number, maxW: number) => {
     const words = String(text || "").split(/\s+/);
@@ -119,22 +120,41 @@ async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
     return lines;
   };
 
-  rows.forEach((r, i) => {
-    if (y - boxH < margin) { page = doc.addPage([W, H]); y = H - margin; }
+  // deno-lint-ignore no-explicit-any
+  let page: any = null;
+  let slot = 2; // force a new page for the first label
+
+  const drawParty = (px: number, py: number, colW: number, header: string, name: string, phone: string, address: string) => {
+    page.drawText(header, { x: px, y: py, size: 12, font: bold, color: red });
+    let ly = py - 22;
+    page.drawText(`Name: ${name}`, { x: px, y: ly, size: 11, font: bold }); ly -= 20;
+    page.drawText(`Phone: ${phone}`, { x: px, y: ly, size: 11, font: bold }); ly -= 20;
+    page.drawText("Address:", { x: px, y: ly, size: 11, font: bold }); ly -= 15;
+    for (const ln of wrap(address, 10, colW - 6).slice(0, 4)) { page.drawText(ln, { x: px, y: ly, size: 10, font }); ly -= 14; }
+  };
+
+  rows.forEach((r) => {
+    if (slot >= 2) { page = doc.addPage([W, H]); slot = 0; }
     const x = margin, w = W - margin * 2;
-    page.drawRectangle({ x, y: y - boxH, width: w, height: boxH, borderColor: rgb(0, 0, 0), borderWidth: 1 });
-    let ty = y - 20;
-    page.drawText(`Package ${i + 1}    Pathao: ${r.consignment_id ?? ""}`, { x: x + 12, y: ty, size: 9, font, color: rgb(0.4, 0.4, 0.4) });
-    ty -= 24;
-    page.drawText(String(r.name || "").slice(0, 60), { x: x + 12, y: ty, size: 16, font: bold });
-    ty -= 20;
-    page.drawText(String(r.phone || ""), { x: x + 12, y: ty, size: 13, font });
-    ty -= 20;
-    for (const ln of wrap(String(r.address || ""), 12, w - 24).slice(0, 3)) {
-      page.drawText(ln, { x: x + 12, y: ty, size: 12, font });
-      ty -= 16;
-    }
-    y -= boxH + gap;
+    const top = H - margin - slot * (labelH + gap);
+    const bottom = top - labelH;
+    const cx = x + w / 2;
+
+    page.drawRectangle({ x, y: bottom, width: w, height: labelH, borderColor: rgb(0, 0, 0), borderWidth: 1.2 });
+    page.drawText("Pathao Courier", { x: x + w - 108, y: top - 22, size: 12, font: bold, color: red });
+
+    const tbY = top - 52;
+    page.drawRectangle({ x: x + 12, y: tbY, width: w - 24, height: 24, borderColor: rgb(0, 0, 0), borderWidth: 0.8 });
+    page.drawText(`CONSIGNMENT ID/ TRACKING ID:  ${r.consignment_id ?? ""}`, { x: x + 18, y: tbY + 8, size: 10, font: bold });
+
+    page.drawLine({ start: { x: cx, y: tbY - 6 }, end: { x: cx, y: bottom + 40 }, thickness: 1, color: rgb(0, 0, 0) });
+
+    const partyTop = tbY - 26;
+    drawParty(x + 16, partyTop, w / 2 - 30, "From ,", FROM.name, FROM.phone, FROM.address);
+    drawParty(cx + 16, partyTop, w / 2 - 30, "To,", String(r.name || ""), String(r.phone || ""), String(r.address || ""));
+
+    page.drawText("Amount To Be Collected/COD:  0", { x: x + 16, y: bottom + 16, size: 11, font: bold });
+    slot++;
   });
 
   return await doc.save();
