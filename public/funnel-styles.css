@@ -4016,6 +4016,9 @@ textarea.f-input {
     min-width: 280px;
 }
 .f-cookie-text a { color: var(--color-accent); text-decoration: underline; }
+/* Brand name defaults to the dark primary color (for light backgrounds); the cookie
+   banner is dark, so make it light here or it gets camouflaged. */
+.f-cookie-text .f-brand-inline { color: #fff; }
 .f-cookie-actions {
     display: flex;
     gap: 0.75rem;
