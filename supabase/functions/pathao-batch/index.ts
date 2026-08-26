@@ -164,8 +164,10 @@ async function buildPackingPdf(rows: any[]): Promise<Uint8Array> {
 // deno-lint-ignore no-explicit-any
 async function sendPackingEmail(rows: any[]) {
   const key = Deno.env.get("RESEND_API_KEY");
-  const to = Deno.env.get("PACKING_EMAIL");
-  if (!key || !to || rows.length === 0) return;
+  const toRaw = Deno.env.get("PACKING_EMAIL");
+  if (!key || !toRaw || rows.length === 0) return;
+  // PACKING_EMAIL may be a comma/semicolon-separated list (e.g. print shop + owner).
+  const to = toRaw.split(/[,;]/).map((s) => s.trim()).filter(Boolean);
 
   const content = toBase64(await buildPackingPdf(rows));
   const escHtml = (s: unknown) => String(s ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
