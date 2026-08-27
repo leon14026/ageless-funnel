@@ -465,20 +465,47 @@
         return window.FunnelCheckout.PRICING.plans[tier] ? tier : null;
     }
 
+    // Reads a query param from either the hash (#/checkout?code=X) or the page URL (?code=X).
+    function getHashParam(key) {
+        var hashParts = window.location.hash.split('?');
+        if (hashParts.length > 1) {
+            var v = new URLSearchParams(hashParts[1]).get(key);
+            if (v) return v;
+        }
+        return new URLSearchParams(window.location.search).get(key);
+    }
+
     function updateCheckoutDisplay() {
         var plan = window.FunnelCheckout.PRICING.plans[checkoutState.selectedTier];
         var totals = checkout.getTotals();
+        var eff = checkout.getEffectivePlanPrice();
+        var discount = checkoutState.discount;
         var money = window.FunnelCheckout.formatMoney;
         var bumpRow = document.getElementById('checkoutBumpRow');
 
         if (document.getElementById('checkoutSubmitBtn')) document.getElementById('checkoutSubmitBtn').textContent = 'Continue - ' + money(totals.usd, totals.bdt);
         if (document.getElementById('checkoutPlanName')) document.getElementById('checkoutPlanName').textContent = plan.name;
         if (document.getElementById('checkoutPlanPrice')) document.getElementById('checkoutPlanPrice').textContent = money(plan.usd, plan.bdt);
+
+        // Promo-code discount row in the order summary.
+        var discRow = document.getElementById('checkoutDiscountRow');
+        if (discRow) {
+            if (discount && discount.code) {
+                var discLabel = document.getElementById('checkoutDiscountLabel');
+                var discAmt = document.getElementById('checkoutDiscountAmount');
+                if (discLabel) discLabel.textContent = 'Code ' + discount.code;
+                if (discAmt) discAmt.textContent = '−' + money(plan.usd - eff.usd, plan.bdt - eff.bdt);
+                discRow.style.display = 'flex';
+            } else {
+                discRow.style.display = 'none';
+            }
+        }
+
         if (document.getElementById('checkoutTotalPrice')) document.getElementById('checkoutTotalPrice').textContent = money(totals.usd, totals.bdt);
         if (bumpRow) bumpRow.style.display = checkoutState.bumpSelected ? 'flex' : 'none';
 
-        // Preorder manual-payment amount (base tier only; addons are gateway-only)
-        var bdtAmount = '৳' + Number(plan.bdt).toLocaleString('en-US');
+        // Preorder manual-payment amount = the effective (discounted) price the customer must send.
+        var bdtAmount = '৳' + Number(eff.bdt).toLocaleString('en-US');
         if (document.getElementById('preorderAmount')) document.getElementById('preorderAmount').textContent = bdtAmount;
         document.querySelectorAll('.preorderAmountBank').forEach(function (el) { el.textContent = bdtAmount; });
 
@@ -496,8 +523,9 @@
         var totals = checkout.getTotals();
         var money = window.FunnelCheckout.formatMoney;
         var addonRows = document.getElementById('confirmAddonRows');
+        var eff = checkout.getEffectivePlanPrice();
         if (document.getElementById('confirmPlanName')) document.getElementById('confirmPlanName').textContent = plan.name;
-        if (document.getElementById('confirmPlanPrice')) document.getElementById('confirmPlanPrice').textContent = money(plan.usd, plan.bdt);
+        if (document.getElementById('confirmPlanPrice')) document.getElementById('confirmPlanPrice').textContent = money(eff.usd, eff.bdt);
         if (document.getElementById('confirmAccessDuration')) document.getElementById('confirmAccessDuration').textContent = plan.months + (plan.months === 1 ? ' month' : ' months');
         if (document.getElementById('confirmTotalPrice')) document.getElementById('confirmTotalPrice').textContent = money(totals.usd, totals.bdt);
         var totalLabel = document.getElementById('confirmTotalLabel');
@@ -533,11 +561,77 @@
             }
         }
 
+        // --- Promo code UI ---
+        var discInput = document.getElementById('checkoutDiscountCode');
+        var discBtn = document.getElementById('applyDiscountBtn');
+        var discStatus = document.getElementById('discountStatus');
+
+        function renderDiscountStatus(res) {
+            if (!discStatus) return;
+            if (res && res.ok) {
+                discStatus.textContent = '✓ ' + (res.discount && res.discount.label ? res.discount.label : 'Code applied') + ' applied.';
+                discStatus.style.color = 'var(--color-success)';
+                if (discBtn) discBtn.textContent = 'Remove';
+            } else if (res && res.cleared) {
+                discStatus.textContent = '';
+                if (discBtn) discBtn.textContent = 'Apply';
+            } else {
+                discStatus.textContent = (res && res.message) || "That code isn't valid.";
+                discStatus.style.color = 'var(--color-primary)';
+                if (discBtn) discBtn.textContent = 'Apply';
+            }
+        }
+
+        async function applyFromInput() {
+            var code = discInput ? discInput.value : '';
+            // If a code is already applied, the button acts as "Remove".
+            if (checkoutState.discount && checkoutState.discount.code) {
+                checkout.clearDiscount();
+                if (discInput) discInput.value = '';
+                renderDiscountStatus({ cleared: true });
+                updateCheckoutDisplay();
+                return;
+            }
+            if (discBtn) { discBtn.disabled = true; }
+            var res = await checkout.applyDiscount(code);
+            if (discBtn) { discBtn.disabled = false; }
+            renderDiscountStatus(res);
+            updateCheckoutDisplay();
+        }
+
+        // Re-check an applied code when the plan changes (it may not apply to the new tier).
+        async function revalidateDiscount() {
+            if (!(checkoutState.discount && checkoutState.discount.code)) return;
+            var res = await checkout.applyDiscount(checkoutState.discount.code);
+            renderDiscountStatus(res);
+            updateCheckoutDisplay();
+        }
+
+        if (discBtn) discBtn.addEventListener('click', applyFromInput);
+        if (discInput) discInput.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter') { e.preventDefault(); applyFromInput(); }
+        });
+
+        // Auto-apply a code passed in the URL (?code=… or #/checkout?code=…).
+        var urlCode = getHashParam('code');
+        if (urlCode) {
+            if (discInput) discInput.value = urlCode;
+            checkout.applyDiscount(urlCode).then(function (res) {
+                renderDiscountStatus(res);
+                updateCheckoutDisplay();
+            });
+        } else if (checkoutState.discount && checkoutState.discount.code) {
+            // Restore UI for a code kept in session state.
+            if (discInput) discInput.value = checkoutState.discount.code;
+            renderDiscountStatus({ ok: true, discount: checkoutState.discount });
+        }
+
         document.querySelectorAll('.checkout-tier-option').forEach(function (option) {
             option.addEventListener('click', function () {
                 checkoutState.selectedTier = option.getAttribute('data-tier');
                 checkout.resetAddons();
                 updateCheckoutDisplay();
+                revalidateDiscount();
             });
         });
 

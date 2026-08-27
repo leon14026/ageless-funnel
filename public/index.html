@@ -2047,6 +2047,16 @@
                             <p class="f-small text-muted" style="margin-top: 0.375rem;">For delivery of any physical materials within Bangladesh.</p>
                         </div>
 
+                        <!-- Discount code (preorder mode) -->
+                        <div class="f-form-group f-preorder-only">
+                            <label class="f-label" for="checkoutDiscountCode">Have a discount code?</label>
+                            <div style="display: flex; gap: 0.5rem; align-items: stretch;">
+                                <input type="text" id="checkoutDiscountCode" class="f-input" placeholder="Enter code" autocomplete="off" autocapitalize="characters" style="flex: 1; text-transform: uppercase;">
+                                <button type="button" id="applyDiscountBtn" class="f-btn f-btn-secondary" style="white-space: nowrap;">Apply</button>
+                            </div>
+                            <p id="discountStatus" class="f-small" style="margin-top: 0.375rem; font-weight: 600;" role="status" aria-live="polite"></p>
+                        </div>
+
                         <!-- Order Bump -->
                         <div class="f-demo-only" style="margin-top: 1.5rem; border: 2px dashed var(--color-accent); border-radius: var(--radius-md); padding: 1.25rem; background: rgba(233,167,181,0.06);">
                             <label style="display: flex; align-items: flex-start; gap: 0.75rem; cursor: pointer;">
@@ -2119,6 +2129,10 @@
                         <div class="f-order-summary-row">
                             <span id="checkoutPlanName">6 Months — Complete Transformation</span>
                             <span id="checkoutPlanPrice">$74.99 / &#2547;7,499</span>
+                        </div>
+                        <div class="f-order-summary-row" id="checkoutDiscountRow" style="display: none; color: var(--color-success); font-weight: 700;">
+                            <span id="checkoutDiscountLabel">Discount</span>
+                            <span id="checkoutDiscountAmount"></span>
                         </div>
                         <div class="f-order-summary-row" id="checkoutBumpRow" style="display: none;">
                             <span>7-Day Meal Prep Guide</span>

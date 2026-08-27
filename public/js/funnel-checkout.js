@@ -50,7 +50,9 @@
             downsellAccepted: false,
             customer: { name: '', email: '', phone: '', address: '' },
             payment: null,
-            quizAnswers: {}
+            quizAnswers: {},
+            // Applied promo code, or null. Shape: { code, amount_bdt, amount_usd, label }.
+            discount: null
         };
     }
 
@@ -86,13 +88,58 @@
             return items;
         }
 
+        // Base plan price, or the discounted price when a promo code is applied.
+        function getEffectivePlanPrice() {
+            var plan = getPlan();
+            if (state.discount && state.discount.code) {
+                return { usd: Number(state.discount.amount_usd), bdt: Number(state.discount.amount_bdt) };
+            }
+            return { usd: plan.usd, bdt: plan.bdt };
+        }
+
         function getTotals() {
-            return getItems().reduce(function (total, item) {
-                total.usd += item.usd;
-                total.bdt += item.bdt;
+            var eff = getEffectivePlanPrice();
+            return getItems().reduce(function (total, item, idx) {
+                // Item 0 is the base plan; apply the discount there. Addons are never discounted.
+                var price = idx === 0 ? eff : item;
+                total.usd += price.usd;
+                total.bdt += price.bdt;
                 return total;
             }, { usd: 0, bdt: 0 });
         }
+
+        // ---- Promo code: preview (server-validated) ----
+        // Calls the preview_discount RPC so the shown price + bKash amount reflect the code.
+        // The set_preorder_amount trigger re-applies the same discount authoritatively on submit.
+        async function applyDiscount(code) {
+            var clean = (code || '').trim();
+            if (!clean) { state.discount = null; save(); return { cleared: true }; }
+            if (!window.supabaseClient) {
+                return { ok: false, message: 'Discount codes are unavailable right now.' };
+            }
+            var res = await window.supabaseClient.rpc('preview_discount', {
+                p_code: clean, p_tier: state.selectedTier
+            });
+            if (res.error) {
+                console.warn('preview_discount failed:', res.error);
+                return { ok: false, message: 'Could not check that code. Please try again.' };
+            }
+            var row = Array.isArray(res.data) ? res.data[0] : res.data;
+            if (!row || !row.valid) {
+                state.discount = null; save();
+                return { ok: false, message: (row && row.message) || "That code isn't valid." };
+            }
+            state.discount = {
+                code: clean,
+                amount_bdt: Number(row.amount_bdt),
+                amount_usd: Number(row.amount_usd),
+                label: row.label
+            };
+            save();
+            return { ok: true, message: row.message || 'Code applied.', discount: state.discount };
+        }
+
+        function clearDiscount() { state.discount = null; save(); }
 
         function toPaymentPayload() {
             return {
@@ -119,7 +166,7 @@
                 method: method,
                 reference: reference,
                 tier: state.selectedTier,
-                totals: { usd: getPlan().usd, bdt: getPlan().bdt }
+                totals: { usd: getEffectivePlanPrice().usd, bdt: getEffectivePlanPrice().bdt }
             };
             save();
 
@@ -136,7 +183,8 @@
                 address: (state.customer.address || '').trim() || null,
                 tier: state.selectedTier,
                 payment_method: method,
-                txn_reference: reference
+                txn_reference: reference,
+                discount_code: (state.discount && state.discount.code) ? state.discount.code : null
             };
 
             var res = await window.supabaseClient.from('preorders').insert(row);
@@ -146,6 +194,17 @@
                     return { duplicate: true };
                 }
                 state.payment = null; save();
+                // The set_preorder_amount trigger rejects a since-invalidated code with a
+                // check_violation (23514). Clear it and tell the customer to re-check the price.
+                var msg = res.error.message || '';
+                if (res.error.code === '23514' || msg.indexOf('discount_invalid') !== -1) {
+                    state.discount = null; save();
+                    var m = msg.match(/discount_invalid:\s*(.+?)\s*$/);
+                    var reason = m ? m[1] : 'Your discount code is no longer valid.';
+                    var err = new Error(reason + ' It has been removed — please review the price and try again.');
+                    err.discountInvalid = true;
+                    throw err;
+                }
                 console.error('Preorder insert failed:', res.error);
                 throw new Error('Could not submit your pre-order. Please try again.');
             }
@@ -228,6 +287,9 @@
             getItems: getItems,
             getTotals: getTotals,
             getPlan: getPlan,
+            getEffectivePlanPrice: getEffectivePlanPrice,
+            applyDiscount: applyDiscount,
+            clearDiscount: clearDiscount,
             toPaymentPayload: toPaymentPayload,
             completePayment: completePayment,
             submitPreorder: submitPreorder,
