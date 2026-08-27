@@ -9,8 +9,6 @@
     // ==========================================
     const routes = {
         '/': 'page-home',
-        '/free-plan': 'page-free-plan',
-        '/free-plan/thank-you': 'page-free-plan-thank-you',
         '/quiz': 'page-quiz',
         '/quiz/results': 'page-quiz-results',
         '/tulee-story': 'page-tulee-story',
@@ -29,10 +27,10 @@
     };
 
     // Pages where the nav starts transparent (dark hero sections)
-    const darkHeroPages = ['page-home', 'page-free-plan', 'page-join'];
+    const darkHeroPages = ['page-home', 'page-join'];
 
     // Pages with no navigation
-    const noNavPages = ['page-free-plan'];
+    const noNavPages = [];
     const checkout = window.FunnelCheckout.create('A');
     const checkoutState = checkout.state;
     const mealPlanRows = [
@@ -89,10 +87,6 @@
         var route = getRouteFromHash();
         if (!window.FunnelCheckout.isDemoMode() && (route.path === '/checkout/upsell' || route.path === '/checkout/downsell')) {
             navigateTo('/checkout');
-            return;
-        }
-        if (!window.FunnelCheckout.isDemoMode() && (route.path === '/free-plan' || route.path === '/free-plan/thank-you')) {
-            navigateTo('/');
             return;
         }
         if (!window.FunnelCheckout.isDemoMode() && route.path === '/checkout/confirmation' && !checkoutState.payment) {
@@ -333,19 +327,6 @@
         }
     }
 
-    // ==========================================
-    // Lead Magnet Form
-    // ==========================================
-    function initLeadMagnetForm() {
-        var form = document.getElementById('leadMagnetForm');
-        if (form) {
-            form.addEventListener('submit', function (e) {
-                e.preventDefault();
-                trackEvent('lead_magnet_opt_in', { source: 'free_plan_page' });
-                navigateTo('/free-plan/thank-you');
-            });
-        }
-    }
 
     // ==========================================
     // BMI + BMR Calculator
@@ -919,7 +900,7 @@
 
     function initForms() {
         document.querySelectorAll('form').forEach(function (form) {
-            if (form.id === 'leadMagnetForm' || form.id === 'checkoutForm' || form.id === 'quizEmailForm' || form.id === 'bmiBmrForm' || form.id === 'waitlistForm' || form.id === 'transformationPreviewForm') return;
+            if (form.id === 'checkoutForm' || form.id === 'quizEmailForm' || form.id === 'bmiBmrForm' || form.id === 'waitlistForm' || form.id === 'transformationPreviewForm') return;
 
             form.addEventListener('submit', function (e) {
                 e.preventDefault();
@@ -1310,7 +1291,6 @@
         initNav();
         initFaqAccordions();
         initQuiz();
-        initLeadMagnetForm();
         initBmiBmrCalculator();
         initCheckout();
         initUpsellCountdown();
