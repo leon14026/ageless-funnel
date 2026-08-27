@@ -109,7 +109,6 @@ These sit on the marketing site so visitors can start without buying.
 | **BMI & BMR calculator** | Height/weight sliders plus age; explains BMI as one clue and BMR as baseline calories |
 | **Healthy years / life expectancy calculator** | Population-based estimate for Bangladeshi women 40+, using movement, nutrition, and everyday health choices |
 | **AI transformation preview** | Upload a photo for a subtle, illustrative wellness preview (Turnstile-gated) |
-| **Free 7-day starter plan** | Lead magnet: 7 days of joint-friendly video workouts, a daily schedule from Coach Tulee, Bangladeshi nutrition tips, low-impact modifications, 15–20 minute sessions |
 | **Waitlist** | Email signup for visitors who are not ready to pre-order (including card/international visitors during pre-order) |
 
 ---
