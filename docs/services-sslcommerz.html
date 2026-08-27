@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #3B3B3B;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page { padding: 0 44px 26px; }
+  .hero {
+    background: linear-gradient(135deg, #3B1F2B 0%, #6E3B4E 100%);
+    color: #fff; padding: 22px 44px 18px; display: flex; align-items: center; gap: 20px;
+  }
+  .hero img.logo { height: 60px; width: 60px; background: #fff; border-radius: 12px; padding: 6px; }
+  .hero h1 { margin: 0; font-size: 26px; font-family: Georgia, 'Playfair Display', serif; }
+  .hero .sub { margin: 3px 0 0; font-size: 13px; color: #E9A7B5; font-weight: 600; letter-spacing: .3px; }
+  .hero .site { margin: 6px 0 0; font-size: 12px; color: rgba(255,255,255,.85); }
+  h2 { color: #3B1F2B; font-size: 16px; margin: 15px 0 6px; border-bottom: 2px solid #E9A7B5; padding-bottom: 4px; }
+  p { font-size: 12.5px; line-height: 1.55; margin: 6px 0; }
+  .lead { font-size: 13px; color: #5A5A5A; }
+  ul { margin: 6px 0; padding-left: 18px; }
+  li { font-size: 12.5px; line-height: 1.6; }
+  .row { display: flex; gap: 16px; align-items: flex-start; }
+  .row .txt { flex: 1; }
+  .row img { width: 150px; height: 110px; object-fit: cover; border-radius: 10px; border: 1px solid #ECE6E1; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
+  th, td { border: 1px solid #E8E4DF; padding: 8px 12px; text-align: left; }
+  th { background: #FBF3F0; color: #3B1F2B; }
+  td.price { font-weight: 700; color: #3B1F2B; }
+  .badge { display: inline-block; background: rgba(22,163,74,.12); color: #16A34A; font-weight: 700;
+           font-size: 11px; padding: 3px 10px; border-radius: 999px; }
+  .cards { display: flex; gap: 12px; margin-top: 8px; }
+  .card { flex: 1; border: 1px solid #ECE6E1; border-radius: 10px; padding: 10px 12px; font-size: 11.5px; }
+  .card b { color: #3B1F2B; display: block; margin-bottom: 3px; }
+  .footer { margin-top: 14px; border-top: 1px solid #E8E4DF; padding-top: 10px; font-size: 11.5px; color: #8A8A8A; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <img class="logo" src="services-assets/logo.png" alt="logo">
+    <div>
+      <h1>Ageless by Tulee</h1>
+      <div class="sub">Digital Wellness Services — Merchant Overview</div>
+      <div class="site">agelessbytulee.com</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <h2>About the business</h2>
+    <p class="lead">Ageless by Tulee is an <b>online (digital) wellness program</b> for women aged 40 and above.
+    Members follow guided at-home video workouts, track their nutrition, receive custom meal plans, monitor their
+    progress, and get coaching — <b>entirely through our web-based member platform</b>. Every service is delivered
+    digitally to the customer's online account; there are no in-person sessions required.</p>
+    <p><span class="badge">100% digital delivery</span> &nbsp; After a successful payment, the customer instantly
+    receives login access by email and uses all services online, on any device (phone, tablet, or laptop).</p>
+
+    <h2>Services offered (paid membership)</h2>
+    <p>Customers purchase <b>time-based access</b> to the Ageless by Tulee program. Access is a one-time payment
+    (not an auto-renewing subscription). Each membership includes all of the following digital services for the
+    chosen term:</p>
+    <div class="row">
+      <div class="txt">
+        <ul>
+          <li><b>Guided video workout library</b> — follow-along, joint-friendly at-home routines, progressive over the program</li>
+          <li><b>Nutrition tracking</b> — a food log built around everyday Bangladeshi meals, with calorie and macro goals</li>
+          <li><b>Custom meal plans</b> — goal-based plans using natural whole foods, with auto-generated grocery lists</li>
+          <li><b>Progress tracking</b> — weight, body measurements, and trend charts over time</li>
+          <li><b>Coaching &amp; community</b> — guidance from Coach Tulee and regular online group meetings</li>
+          <li><b>Member web app</b> — a private online account for workouts, tracking, and plans</li>
+        </ul>
+      </div>
+      <img src="services-assets/coach.jpg" alt="coach">
+    </div>
+
+    <h2>Pricing (one-time access)</h2>
+    <table>
+      <tr><th>Plan</th><th>Price (BDT)</th><th>Price (USD)</th><th>Access</th></tr>
+      <tr><td>1 Month</td><td class="price">৳4,999</td><td>$49.99</td><td>1 month of full program access</td></tr>
+      <tr><td>3 Months</td><td class="price">৳5,999</td><td>$59.99</td><td>3 months of full program access</td></tr>
+      <tr><td>6 Months</td><td class="price">৳7,499</td><td>$74.99</td><td>6 months of full program access</td></tr>
+    </table>
+
+    <div class="row" style="margin-top:8px;">
+      <img src="services-assets/food.jpg" alt="nutrition">
+      <div class="txt">
+        <h2 style="margin-top:0;">How the service is delivered</h2>
+        <p>All purchases are <b>digital services</b> delivered online. Upon successful payment the customer's
+        account is activated automatically and login details are emailed to them. The customer then signs in at
+        agelessbytulee.com to access their workouts, nutrition tools, meal plans, and progress dashboard for the
+        duration of their chosen term. No goods are shipped and no physical items are involved.</p>
+      </div>
+    </div>
+
+    <h2>Free tools (no purchase required)</h2>
+    <div class="cards">
+      <div class="card"><b>Wellness quiz</b>A short quiz that suggests a suitable starting plan.</div>
+      <div class="card"><b>Health calculators</b>BMI/BMR and a healthy-years estimate for visitors.</div>
+      <div class="card"><b>Free 7-day starter</b>A no-cost sample of guided workouts and nutrition tips.</div>
+    </div>
+
+    <div class="footer">
+      <b>Ageless by Tulee</b> &nbsp;·&nbsp; Website: agelessbytulee.com &nbsp;·&nbsp; Support: hello@agelessbytulee.com<br>
+      All services listed are digital and delivered online through the member platform.
+    </div>
+  </div>
+</body>
+</html>
