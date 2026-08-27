@@ -9,8 +9,8 @@
     const PRICING = {
         plans: {
             '1': { sku: 'access_1_month', months: 1, name: '1 Month Access', usd: 49.99, bdt: 4999 },
-            '3': { sku: 'access_3_months', months: 3, name: '3 Months Access', usd: 59.99, bdt: 5999 },
-            '6': { sku: 'access_6_months', months: 6, name: '6 Months Access', usd: 74.99, bdt: 7499 },
+            '3': { sku: 'access_3_months', months: 3, name: '3 Months Access', usd: 59.99, bdt: 5999, origUsd: 99.99, origBdt: 9999, discount: 40 },
+            '6': { sku: 'access_6_months', months: 6, name: '6 Months Access', usd: 74.99, bdt: 7499, origUsd: 149.99, origBdt: 14999, discount: 50 },
             // Hidden end-to-end test plan. Not shown on any pricing card; reachable only via
             // the secret link #/checkout?tier=test. Pays ৳10 so a real person can run the
             // full pay -> auto-verify -> auto-grant -> login flow cheaply.
