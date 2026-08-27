@@ -9,10 +9,10 @@ INSERT INTO private.app_secrets (name, value)
 VALUES ('pathao_batch_secret', '__PATHAO_BATCH_SECRET__')
 ON CONFLICT (name) DO UPDATE SET value = EXCLUDED.value;
 
--- Daily at 16:00 UTC (10 PM Dhaka): create the day's Pathao orders + email the packing list.
+-- Daily at 17:00 UTC (11 PM Dhaka): create the day's Pathao orders + email the packing list.
 SELECT cron.schedule(
   'pathao-daily-batch',
-  '0 16 * * *',
+  '0 17 * * *',
   $$
   SELECT net.http_post(
     url := 'https://osbaarjfafflzoftojbd.supabase.co/functions/v1/pathao-batch',
