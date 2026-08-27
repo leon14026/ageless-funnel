@@ -96,7 +96,7 @@ function toBase64(bytes: Uint8Array): string {
 }
 
 // Fixed pickup/sender details printed on every label (edit here if they change).
-const FROM = { name: "Shape N' Shine", phone: "01841217767", address: "Banasree, Block C, Road 7, House 19" };
+const FROM = { name: "Combat Gym by Tulee", phone: "01841217767", address: "Banasree, Block C, Road 7, House 19" };
 
 // Build the packing list as a PDF styled like a Pathao courier sticker:
 // tracking-ID box + From (store) / To (customer) columns + COD; FOUR labels per page.
