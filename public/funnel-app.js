@@ -473,22 +473,7 @@
 
         if (document.getElementById('checkoutSubmitBtn')) document.getElementById('checkoutSubmitBtn').textContent = 'Continue - ' + money(totals.usd, totals.bdt);
         if (document.getElementById('checkoutPlanName')) document.getElementById('checkoutPlanName').textContent = plan.name;
-        var planPriceEl = document.getElementById('checkoutPlanPrice');
-        if (planPriceEl) {
-            planPriceEl.innerHTML = plan.origUsd
-                ? '<span style="text-decoration:line-through;color:var(--color-text-muted);font-weight:400;margin-right:0.4rem;">' + money(plan.origUsd, plan.origBdt) + '</span>' + money(plan.usd, plan.bdt)
-                : money(plan.usd, plan.bdt);
-        }
-        var saveRow = document.getElementById('checkoutSaveRow');
-        var saveAmt = document.getElementById('checkoutSaveAmount');
-        if (saveRow && saveAmt) {
-            if (plan.origUsd) {
-                saveRow.style.display = 'flex';
-                saveAmt.textContent = '−' + money(plan.origUsd - plan.usd, plan.origBdt - plan.bdt) + (plan.discount ? ' (' + plan.discount + '% off)' : '');
-            } else {
-                saveRow.style.display = 'none';
-            }
-        }
+        if (document.getElementById('checkoutPlanPrice')) document.getElementById('checkoutPlanPrice').textContent = money(plan.usd, plan.bdt);
         if (document.getElementById('checkoutTotalPrice')) document.getElementById('checkoutTotalPrice').textContent = money(totals.usd, totals.bdt);
         if (bumpRow) bumpRow.style.display = checkoutState.bumpSelected ? 'flex' : 'none';
 
