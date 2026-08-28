@@ -607,10 +607,31 @@
             updateCheckoutDisplay();
         }
 
+        // Applies whatever is typed if it hasn't been applied yet — so a customer who types a
+        // code but never presses Enter / Apply still gets the discount (fires on blur + at submit).
+        async function ensureDiscountApplied() {
+            if (!discInput) return;
+            var typed = discInput.value.trim();
+            var applied = (checkoutState.discount && checkoutState.discount.code) ? checkoutState.discount.code : '';
+            if (typed && typed.toUpperCase() !== applied.toUpperCase()) {
+                var res = await checkout.applyDiscount(typed);
+                renderDiscountStatus(res);
+                updateCheckoutDisplay();
+            } else if (!typed && applied) {
+                checkout.clearDiscount();
+                renderDiscountStatus({ cleared: true });
+                updateCheckoutDisplay();
+            }
+        }
+
         if (discBtn) discBtn.addEventListener('click', applyFromInput);
-        if (discInput) discInput.addEventListener('keydown', function (e) {
-            if (e.key === 'Enter') { e.preventDefault(); applyFromInput(); }
-        });
+        if (discInput) {
+            discInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') { e.preventDefault(); applyFromInput(); }
+            });
+            // Auto-apply when the customer clicks/tabs away from the field.
+            discInput.addEventListener('blur', function () { ensureDiscountApplied(); });
+        }
 
         // Auto-apply a code passed in the URL (?code=… or #/checkout?code=…).
         var urlCode = getHashParam('code');
@@ -710,7 +731,7 @@
         }
 
         if (form) {
-            form.addEventListener('submit', function (e) {
+            form.addEventListener('submit', async function (e) {
                 e.preventDefault();
                 var name = document.getElementById('checkout-name').value;
                 var email = document.getElementById('checkout-email').value;
@@ -728,6 +749,8 @@
                         alert('Please enter your delivery address.');
                         return;
                     }
+                    // Apply a code that was typed but not yet applied, so the discount isn't missed.
+                    await ensureDiscountApplied();
                     checkoutState.customer = { name: name, email: email, phone: phone, address: address };
                     checkout.save();
                     handlePreorderSubmit();
