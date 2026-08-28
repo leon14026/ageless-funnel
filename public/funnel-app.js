@@ -139,6 +139,20 @@
 
     window.addEventListener('hashchange', handleRoute);
 
+    // Send a GA4 page_view when the SPA route changes (the initial load is covered by the
+    // gtag config call). Guarded so a missing/blocked gtag never affects navigation.
+    window.addEventListener('hashchange', function () {
+        if (typeof window.gtag === 'function') {
+            try {
+                window.gtag('event', 'page_view', {
+                    page_location: window.location.href,
+                    page_path: window.location.pathname + window.location.hash,
+                    page_title: document.title
+                });
+            } catch (e) { /* no-op */ }
+        }
+    });
+
     // ==========================================
     // Navigation
     // ==========================================
@@ -967,10 +981,11 @@
         if (typeof console !== 'undefined') {
             console.log('[Ageless by Tulee]', eventName, data || '');
         }
-        // Integration points for real analytics:
-        // if (window.gtag) gtag('event', eventName, data);
-        // if (window.fbq) fbq('trackCustom', eventName, data);
-        // if (window.mixpanel) mixpanel.track(eventName, data);
+        // Forward to GA4. Guarded: if gtag is blocked or hasn't loaded, this is a no-op
+        // and the funnel is unaffected.
+        if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+            try { window.gtag('event', eventName, data || {}); } catch (e) { /* never break the funnel */ }
+        }
     }
 
     // ==========================================
