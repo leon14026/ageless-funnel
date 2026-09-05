@@ -107,7 +107,7 @@
                         return;
                     }
                     if (res.ok && data && (data.status === 'failed' || data.status === 'cancelled')) {
-                        window.location.replace('signup-fail.html?tran_id=' + encodeURIComponent(tranId));
+                        window.location.replace('signup-fail?tran_id=' + encodeURIComponent(tranId));
                         return;
                     }
                 } catch (e) { /* transient — keep polling */ }

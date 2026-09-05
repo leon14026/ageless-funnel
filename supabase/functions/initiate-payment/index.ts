@@ -57,9 +57,11 @@ Deno.serve(async (request) => {
       total_amount: String(amount),
       currency: "BDT",
       tran_id: transactionId,
-      success_url: `${siteUrl}/pages/payment/signup-success.html?tran_id=${transactionId}`,
-      fail_url: `${siteUrl}/pages/payment/signup-fail.html?tran_id=${transactionId}`,
-      cancel_url: `${siteUrl}/pages/payment/signup-fail.html?cancelled=true&tran_id=${transactionId}`,
+      // Extensionless paths: Cloudflare serves the static return pages at the clean URL and
+      // 307-redirects the .html form, so target the canonical URL directly (no redirect hop).
+      success_url: `${siteUrl}/pages/payment/signup-success?tran_id=${transactionId}`,
+      fail_url: `${siteUrl}/pages/payment/signup-fail?tran_id=${transactionId}`,
+      cancel_url: `${siteUrl}/pages/payment/signup-fail?cancelled=true&tran_id=${transactionId}`,
       ipn_url: `${supabaseUrl}/functions/v1/payment-ipn`,
       cus_name: name,
       cus_email: email,
