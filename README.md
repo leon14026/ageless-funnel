@@ -53,7 +53,46 @@ and card/international visitors are routed to the free waitlist.
    or that build will fail on that file.
 6. Once verified on `*.pages.dev`: point Namecheap nameservers at Cloudflare and attach the custom domain.
 
-## Deferred to July / `live` phase
+## SSLCommerz card payments (go-live)
 
-SSLCommerz Edge Functions + secrets, the member dashboard/auth area, an in-app admin page,
-and converting `verified` pre-orders into `access_entitlements`.
+The card path is fully built but **gated** — it stays dormant while `LAUNCH_MODE='preorder'` and
+`SSLCOMMERZ_SANDBOX` is unset. It never affects the live bKash preorder flow. Build/test on **sandbox**
+first; the only step that touches real money is the final flip.
+
+**Edge Function secrets (Supabase → Edge Functions → Secrets):**
+
+- `SSLCOMMERZ_STORE_ID`, `SSLCOMMERZ_STORE_PASSWORD` — your SSLCommerz store credentials
+  (use the **sandbox** pair for testing, the **live** pair at go-live).
+- `SSLCOMMERZ_SANDBOX` — leave **unset** (or any value ≠ `false`) to use `sandbox.sslcommerz.com`.
+  Set to **`false`** only at go-live to use `securepay.sslcommerz.com`.
+- `SITE_URL` = `https://agelessbytulee.com` (used to build the return URLs).
+- `SUPABASE_URL`, `SUPABASE_SERVICE_ROLE_KEY` — already set for the other functions.
+- `ALLOW_CHECKOUT_ADDONS` — optional; `true` lets add-on SKUs through `validateItems`.
+
+**Functions:** `initiate-payment`, `payment-ipn` (`verify_jwt=false`), `validate-payment`. Redeploy all
+three after changing secrets: `supabase functions deploy <name>`.
+
+**DB (already applied):** `orders` + `order_items` (RLS: owner/admin read, service-role write),
+`fulfill_card_order()` (atomic, idempotent fulfilment), `rate_limits` + `rate_limit_hit()`,
+`cancel_stale_orders()` (hourly cron, cancels pending > 2h), `revoke_card_order(order_id)` (refund helper —
+call from the SQL editor to revoke access + mark the order `refunded`).
+
+**Sandbox test (site stays on `preorder`):** call `initiate-payment` directly (curl with a test payload) →
+open the returned `GatewayPageURL` → pay with a sandbox test card → confirm the IPN completes the order and
+grants one `source='card'` entitlement, and the return page (`/pages/payment/signup-success`) shows success.
+
+**Go-live checklist:**
+1. Sandbox end-to-end passes (success + fail/cancel + duplicate-IPN idempotency).
+2. Swap the two SSLCommerz secrets to the **live** pair; set `SSLCOMMERZ_SANDBOX=false`; redeploy the 3 functions.
+3. In the SSLCommerz merchant panel, set the IPN URL to `<SUPABASE_URL>/functions/v1/payment-ipn`.
+4. Flip `js/config.js` → `APP.LAUNCH_MODE` to `'live'`; push.
+5. Do one real low-value live card order end-to-end, then confirm the entitlement, then open the doors.
+
+**Note — promo codes are preorder-only by design.** The discount-code UI is `.f-preorder-only`, so it's
+hidden in `live`/card mode and the card path applies no discount. If you later want promo codes on cards,
+wire `_calc_discount`/`preview_discount` into `initiate-payment` and add a discount field to the gateway UI.
+
+## Deferred to `live` phase
+
+The member dashboard/auth area polish and an in-app admin page. (bKash pre-orders already convert to
+`access_entitlements` automatically via `grant-access`; card orders via `fulfill_card_order`.)

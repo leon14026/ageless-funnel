@@ -29,8 +29,21 @@ Deno.serve(async (request) => {
   try {
     const incoming = await request.formData();
     const transactionId = String(incoming.get("tran_id") || "");
+    if (!transactionId) throw new Error("Missing transaction id.");
+    const ipnStatus = String(incoming.get("status") || "").toUpperCase();
+
+    const supabase = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+
+    // Explicit failure/cancellation IPNs: mark the pending order so it doesn't sit stuck, then ack.
+    if (ipnStatus === "FAILED" || ipnStatus === "CANCELLED") {
+      await supabase.from("orders")
+        .update({ status: ipnStatus === "CANCELLED" ? "cancelled" : "failed" })
+        .eq("transaction_id", transactionId).eq("status", "pending");
+      return new Response("Acknowledged.", { status: 200 });
+    }
+
     const validationId = String(incoming.get("val_id") || "");
-    if (!transactionId || !validationId) throw new Error("Missing transaction validation data.");
+    if (!validationId) throw new Error("Missing validation data.");
 
     const storeId = requireEnv("SSLCOMMERZ_STORE_ID");
     const storePassword = requireEnv("SSLCOMMERZ_STORE_PASSWORD");
@@ -50,7 +63,6 @@ Deno.serve(async (request) => {
       throw new Error("SSLCommerz validation failed.");
     }
 
-    const supabase = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
     const { data: order, error: orderError } = await supabase.from("orders")
       .select("*")
       .eq("transaction_id", transactionId)

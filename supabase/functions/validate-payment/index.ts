@@ -10,6 +10,13 @@ Deno.serve(async (request) => {
     if (!transactionId) return json({ error: "Missing transaction ID." }, 400);
 
     const supabase = createClient(requireEnv("SUPABASE_URL"), requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+
+    // Rate-limit per transaction id: allows the success page's ~20 status polls, blocks hammering.
+    const limit = await supabase.rpc("rate_limit_hit", {
+      p_bucket: `validate:${String(transactionId)}`, p_max: 40, p_window_seconds: 600,
+    });
+    if (limit.data === false) return json({ error: "Too many requests. Please slow down." }, 429);
+
     const { data: order, error } = await supabase.from("orders")
       .select("status, activation_status, amount, currency, access_months")
       .eq("transaction_id", String(transactionId))

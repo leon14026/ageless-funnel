@@ -776,7 +776,9 @@
                     return;
                 }
 
-                checkoutState.customer = { name: name, email: email, phone: phone, address: address };
+                // Honeypot forwarded to initiate-payment for the bot gate (real users never fill it).
+                var gwHoneypot = document.getElementById('checkoutCompany');
+                checkoutState.customer = { name: name, email: email, phone: phone, address: address, company: gwHoneypot ? gwHoneypot.value : '' };
                 checkout.save();
                 trackEvent('checkout_details_saved', { plan: checkoutState.selectedTier, amount: checkout.getTotals().bdt, currency: 'BDT' });
                 if (window.FunnelCheckout.isDemoMode()) navigateTo('/checkout/upsell');

@@ -56,9 +56,13 @@ const Payment = {
 
     async getOrderHistory(limit) {
         if (!window.supabaseClient) return { data: [], error: null };
+        // Defense in depth: scope to the signed-in user explicitly, on top of the orders RLS policy.
+        const { data: { user } } = await window.supabaseClient.auth.getUser();
+        if (!user) return { data: [], error: null };
         return window.supabaseClient
             .from('orders')
             .select('*')
+            .eq('user_id', user.id)
             .order('created_at', { ascending: false })
             .limit(limit || 50);
     },

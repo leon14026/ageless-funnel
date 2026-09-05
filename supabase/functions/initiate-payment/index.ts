@@ -17,13 +17,30 @@ Deno.serve(async (request) => {
       return json({ error: "Enter a valid name, email, and Bangladeshi phone number." }, 400);
     }
 
+    // Honeypot: a hidden field real users never fill.
+    if (String(payload?.customer?.company || "").trim()) {
+      return json({ error: "Could not initiate payment." }, 400);
+    }
+
+    const supabaseUrl = requireEnv("SUPABASE_URL");
+    const supabase = createClient(supabaseUrl, requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
+
+    // Abuse gate: durable per-IP and per-email rate limits (prevents order/spam floods).
+    const clientIp = ((request.headers.get("x-forwarded-for") || "").split(",")[0].trim())
+      || request.headers.get("cf-connecting-ip") || "unknown";
+    const [ipLimit, emailLimit] = await Promise.all([
+      supabase.rpc("rate_limit_hit", { p_bucket: `initiate:ip:${clientIp}`, p_max: 30, p_window_seconds: 600 }),
+      supabase.rpc("rate_limit_hit", { p_bucket: `initiate:email:${email}`, p_max: 5, p_window_seconds: 600 }),
+    ]);
+    if (ipLimit.data === false || emailLimit.data === false) {
+      return json({ error: "Too many attempts. Please wait a few minutes and try again." }, 429);
+    }
+
     const items = validateItems(payload.items, Deno.env.get("ALLOW_CHECKOUT_ADDONS") === "true");
     const access = items.find((item) => item.kind === "access")!;
     const amount = items.reduce((total, item) => total + item.bdt, 0);
     const transactionId = `ABT_${Date.now()}_${crypto.randomUUID().slice(0, 8).toUpperCase()}`;
     const siteUrl = requireEnv("SITE_URL").replace(/\/$/, "");
-    const supabaseUrl = requireEnv("SUPABASE_URL");
-    const supabase = createClient(supabaseUrl, requireEnv("SUPABASE_SERVICE_ROLE_KEY"));
 
     const { data: order, error: orderError } = await supabase.from("orders").insert({
       transaction_id: transactionId,
