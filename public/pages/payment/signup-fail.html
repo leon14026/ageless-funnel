@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-WQM87X3KS8"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-WQM87X3KS8');
+    </script>
+
+    <title>Payment Not Completed | Ageless by Tulee</title>
+    <meta name="robots" content="noindex">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Nunito:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../funnel-styles.css">
+    <style>
+        body { font-family: 'Nunito', system-ui, sans-serif; background: var(--color-light-bg, #faf6f2); color: var(--color-text, #2c2420); margin: 0; }
+        .pay-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .pay-card { background: #fff; border-radius: 16px; box-shadow: 0 10px 40px rgba(0,0,0,0.08); max-width: 480px; width: 100%; padding: 2.5rem 2rem; text-align: center; }
+        .pay-card h1 { font-family: 'Playfair Display', serif; font-size: 1.6rem; margin: 0.75rem 0 0.5rem; }
+        .pay-card p { color: var(--color-text-secondary, #6b5f57); line-height: 1.6; margin: 0.5rem 0 0; }
+        .pay-icon { font-size: 3rem; line-height: 1; }
+        .pay-actions { margin-top: 1.75rem; display: flex; flex-direction: column; gap: 0.75rem; }
+    </style>
+</head>
+<body>
+    <main class="pay-wrap">
+        <div class="pay-card">
+            <div class="pay-icon">💳</div>
+            <h1 id="failTitle">Payment not completed</h1>
+            <p id="failMsg">Your payment wasn't completed, so you have not been charged. You can try again whenever you're ready.</p>
+            <div class="pay-actions">
+                <a href="/#/checkout" class="f-btn f-btn-primary">Try again</a>
+                <a href="/" class="f-btn f-btn-outline">Back to Home</a>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        (function () {
+            var params = new URLSearchParams(window.location.search);
+            var cancelled = params.get('cancelled') === 'true';
+            var tranId = params.get('tran_id') || '';
+            if (cancelled) {
+                document.getElementById('failTitle').textContent = 'Payment cancelled';
+                document.getElementById('failMsg').textContent =
+                    "You cancelled the payment, so you have not been charged. You can pick up where you left off whenever you're ready.";
+            }
+            if (typeof window.gtag === 'function') {
+                try { window.gtag('event', 'payment_failed', { transaction_id: tranId, cancelled: cancelled }); } catch (e) {}
+            }
+        })();
+    </script>
+</body>
+</html>

@@ -1,12 +1,6 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { requireEnv } from "../_shared/http.ts";
 
-function addMonths(date: Date, months: number) {
-  const result = new Date(date);
-  result.setMonth(result.getMonth() + months);
-  return result;
-}
-
 async function findOrInviteUser(supabase: ReturnType<typeof createClient>, email: string, orderId: string) {
   let pageNumber = 1;
 
@@ -69,27 +63,19 @@ Deno.serve(async (request) => {
       throw new Error("Payment details do not match the pending order.");
     }
 
-    const paidAt = new Date();
     const user = await findOrInviteUser(supabase, order.customer_email.toLowerCase(), order.id);
-    const { error: entitlementError } = await supabase.from("access_entitlements").upsert({
-      order_id: order.id,
-      user_id: user.id,
-      customer_email: order.customer_email.toLowerCase(),
-      status: "active",
-      starts_at: paidAt.toISOString(),
-      ends_at: addMonths(paidAt, Number(order.access_months)).toISOString(),
-    }, { onConflict: "order_id" });
-    if (entitlementError) throw entitlementError;
 
-    const { error: updateError } = await supabase.from("orders").update({
-      user_id: user.id,
-      status: "completed",
-      paid_at: paidAt.toISOString(),
-      payment_reference: validationId,
-      payment_method: validation.card_type || "online",
-      activation_status: "email_sent",
-    }).eq("id", order.id).eq("status", "pending");
-    if (updateError) throw updateError;
+    // Atomic fulfilment: marks the order completed AND grants the entitlement in one transaction
+    // (row-locked, idempotent). Avoids the earlier split-write race where access could be granted
+    // without the order being marked completed.
+    const { data: outcome, error: fulfillError } = await supabase.rpc("fulfill_card_order", {
+      p_transaction_id: transactionId,
+      p_user_id: user.id,
+      p_payment_reference: validationId,
+      p_payment_method: validation.card_type || "online",
+    });
+    if (fulfillError) throw fulfillError;
+    if (outcome === "not_found") throw new Error("Order not found for fulfilment.");
 
     return new Response("Payment verified.", { status: 200 });
   } catch (error) {
