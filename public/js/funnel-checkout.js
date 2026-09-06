@@ -172,7 +172,7 @@
 
             if (!window.supabaseClient) {
                 state.payment = null; save();
-                throw new Error('Sign-ups are not available right now. Please contact support.');
+                throw new Error('Sign-ups are not available right now. Please email support@agelessbytulee.com.');
             }
 
             var row = {
@@ -215,7 +215,7 @@
         async function submitWaitlist(opts) {
             opts = opts || {};
             if (!window.supabaseClient) {
-                throw new Error('The waitlist is not available right now. Please contact support.');
+                throw new Error('The waitlist is not available right now. Please email support@agelessbytulee.com.');
             }
             var row = {
                 funnel: funnelId,
