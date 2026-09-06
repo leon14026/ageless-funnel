@@ -736,7 +736,18 @@
             if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
 
             checkout.submitPreorder({ method: method, reference: reference }).then(function (res) {
-                trackEvent(res && res.duplicate ? 'preorder_duplicate' : 'preorder_submitted', { tier: checkoutState.selectedTier, method: method });
+                // This email already has a verified pre-order. Don't show a confirmation —
+                // that's what previously hid the problem and lost people's payments.
+                if (res && res.alreadyActive) {
+                    trackEvent('preorder_already_active', { tier: checkoutState.selectedTier, method: method });
+                    if (err) {
+                        err.innerHTML = 'This email already has access. Please <a href="/pages/auth/login.html">log in</a>, ' +
+                            'or check your inbox for your login link. Need help? Email support@agelessbytulee.com.';
+                    }
+                    if (btn) { btn.disabled = false; updateCheckoutDisplay(); }
+                    return;
+                }
+                trackEvent('preorder_submitted', { tier: checkoutState.selectedTier, method: method, outcome: res && res.outcome });
                 navigateTo('/checkout/confirmation');
             }).catch(function (error) {
                 if (err) err.textContent = error.message || 'Could not submit your pre-order. Please try again.';

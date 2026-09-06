@@ -175,24 +175,24 @@
                 throw new Error('Sign-ups are not available right now. Please email support@agelessbytulee.com.');
             }
 
-            var row = {
-                funnel: funnelId,
-                name: state.customer.name,
-                email: state.customer.email,
-                phone: state.customer.phone,
-                address: (state.customer.address || '').trim() || null,
-                tier: state.selectedTier,
-                payment_method: method,
-                txn_reference: reference,
-                discount_code: (state.discount && state.discount.code) ? state.discount.code : null
-            };
-
-            var res = await window.supabaseClient.from('preorders').insert(row);
+            // Goes through the submit_preorder RPC rather than a raw insert. preorders has
+            // UNIQUE(email, funnel), so a plain insert failed for anyone who had submitted
+            // before (e.g. an earlier attempt with a wrong TrxID) — and the old code treated
+            // that as success, so their real reference was never stored and their payment
+            // could never be matched. The RPC replaces an unpaid row and refuses to touch a
+            // paid one, returning 'created' | 'updated' | 'already_active'.
+            var res = await window.supabaseClient.rpc('submit_preorder', {
+                p_funnel: funnelId,
+                p_name: state.customer.name,
+                p_email: state.customer.email,
+                p_phone: state.customer.phone,
+                p_address: (state.customer.address || '').trim() || null,
+                p_tier: state.selectedTier,
+                p_payment_method: method,
+                p_txn_reference: reference,
+                p_discount_code: (state.discount && state.discount.code) ? state.discount.code : null
+            });
             if (res.error) {
-                if (res.error.code === '23505') {
-                    // Already pre-ordered with this email — treat as success.
-                    return { duplicate: true };
-                }
                 state.payment = null; save();
                 // The set_preorder_amount trigger rejects a since-invalidated code with a
                 // check_violation (23514). Clear it and tell the customer to re-check the price.
@@ -205,10 +205,18 @@
                     err.discountInvalid = true;
                     throw err;
                 }
-                console.error('Preorder insert failed:', res.error);
+                console.error('Preorder submit failed:', res.error);
                 throw new Error('Could not submit your pre-order. Please try again.');
             }
-            return { ok: true };
+
+            // This email already has a paid, verified pre-order — never overwrite it, and
+            // never show a fake confirmation. The caller surfaces a "log in" message instead.
+            if (res.data === 'already_active') {
+                state.payment = null; save();
+                return { alreadyActive: true };
+            }
+
+            return { ok: true, outcome: res.data };
         }
 
         // ---- Free waitlist submission ----
