@@ -1,5 +1,12 @@
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import { requireEnv } from "../_shared/http.ts";
+
+// Inlined from _shared/http.ts so this function is self-contained and can be
+// deployed by pasting this single file into the Supabase dashboard.
+function requireEnv(name: string) {
+  const value = Deno.env.get(name);
+  if (!value) throw new Error(`Missing ${name}`);
+  return value;
+}
 
 async function findOrInviteUser(supabase: ReturnType<typeof createClient>, email: string, orderId: string) {
   let pageNumber = 1;
