@@ -138,11 +138,12 @@ Deno.serve(async (request) => {
       total_amount: String(amount),
       currency: "BDT",
       tran_id: transactionId,
-      // Extensionless paths: Cloudflare serves the static return pages at the clean URL and
-      // 307-redirects the .html form, so target the canonical URL directly (no redirect hop).
-      success_url: `${siteUrl}/pages/payment/signup-success?tran_id=${transactionId}`,
-      fail_url: `${siteUrl}/pages/payment/signup-fail?tran_id=${transactionId}`,
-      cancel_url: `${siteUrl}/pages/payment/signup-fail?cancelled=true&tran_id=${transactionId}`,
+      // SSLCommerz returns the customer with a POST, which Cloudflare's static pages reject
+      // with 405. Point at the payment-return function, which accepts the POST and
+      // 303-redirects (as a GET) to the right static page.
+      success_url: `${supabaseUrl}/functions/v1/payment-return?tran_id=${transactionId}`,
+      fail_url: `${supabaseUrl}/functions/v1/payment-return?tran_id=${transactionId}&status=FAILED`,
+      cancel_url: `${supabaseUrl}/functions/v1/payment-return?tran_id=${transactionId}&cancelled=true`,
       ipn_url: `${supabaseUrl}/functions/v1/payment-ipn`,
       cus_name: name,
       cus_email: email,
