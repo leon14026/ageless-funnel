@@ -22,8 +22,12 @@ async function findOrInviteUser(supabase: ReturnType<typeof createClient>, email
     pageNumber += 1;
   }
 
+  // redirectTo lands the customer on the set-password page. Without it Supabase sends them
+  // to the default Site URL, which signs them in but never lets them set a password —
+  // so they could never log in again with email + password. Mirrors grant-access (bKash).
   const { data, error } = await supabase.auth.admin.inviteUserByEmail(email, {
     data: { paid_order_id: orderId },
+    redirectTo: "https://agelessbytulee.com/pages/auth/reset-password.html",
   });
   if (error) throw error;
   if (!data.user) throw new Error("Could not create the invited user.");
