@@ -17,6 +17,72 @@ const Programs = {
         return this._data;
     },
 
+    // ---- Access scope + content drip -------------------------------------------------
+    // A member keeps the months their tier bought, for life, but those months reveal one at a
+    // time: month N opens N months after the anchor (the later of the program launch or their
+    // access start). unlockedThrough = min(tier months, elapsed + 1), so month 1 is always open
+    // and a 1-month member stays capped at month 1 forever.
+    _access: null,
+
+    async loadAccess() {
+        if (this._access) return this._access;
+        const total = (this._data && this._data.months.length) || 6;
+        const demo = !(window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.DEMO_MODE === false);
+        const openAll = { months: total, unlockedThrough: total, anchor: null, full: true };
+
+        // Demo/preview shows everything rather than looking half-broken.
+        if (demo) { this._access = openAll; return this._access; }
+
+        let ent = null;
+        try {
+            const session = window.Auth ? await Auth.getSession() : null;
+            if (session && window.Payment && Payment.getEntitlement) {
+                ent = await Payment.getEntitlement(session.user.id);
+            }
+        } catch (e) { /* fall through */ }
+
+        // No readable entitlement: the page guard already handles access, so don't lock content.
+        if (!ent) { this._access = openAll; return this._access; }
+
+        const launch = (window.CONFIG && window.CONFIG.APP && window.CONFIG.APP.PROGRAM_START) || null;
+        const launchDate = launch ? new Date(launch + 'T00:00:00') : null;
+        const start = ent.starts_at || launchDate || new Date();
+        const anchor = (launchDate && launchDate > start) ? launchDate : start;
+
+        const scope = Math.min(total, Number(ent.months) || total);
+        const unlocked = Math.min(scope, this._monthsSince(anchor, new Date()) + 1);
+
+        this._access = { months: scope, unlockedThrough: Math.max(1, unlocked), anchor: anchor, full: false };
+        return this._access;
+    },
+
+    /** Whole calendar months between two dates (not yet reached day-of-month doesn't count). */
+    _monthsSince(from, to) {
+        let n = (to.getFullYear() - from.getFullYear()) * 12 + (to.getMonth() - from.getMonth());
+        if (to.getDate() < from.getDate()) n--;
+        return Math.max(0, n);
+    },
+
+    addMonths(date, n) {
+        const d = new Date(date.getTime());
+        const day = d.getDate();
+        d.setMonth(d.getMonth() + n);
+        if (d.getDate() < day) d.setDate(0); // clamp e.g. 31 Jan + 1 month -> 28/29 Feb
+        return d;
+    },
+
+    /** true once the month has unlocked; false while it is still on the drip or out of scope. */
+    isMonthUnlocked(m) { return !this._access || m <= this._access.unlockedThrough; },
+    /** true when the month is beyond what their tier ever includes (an upgrade, not a wait). */
+    isMonthOutOfPlan(m) { return !!this._access && !this._access.full && m > this._access.months; },
+    unlockDateFor(m) {
+        if (!this._access || !this._access.anchor) return null;
+        return this.addMonths(this._access.anchor, m - 1);
+    },
+    formatUnlockDate(d) {
+        return d ? d.toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    },
+
     urlFor(name) { return (this._data && this._data.videos[name]) || ''; },
     getMonth(m) { return (this._data.months || []).find(x => x.month === m); },
     getDay(m, d) { const mo = this.getMonth(m); return mo && mo.days.find(x => x.day === d); },
@@ -37,6 +103,20 @@ const Programs = {
     },
 
     renderMonthCard(mo) {
+        // Locked months stay visible (not hidden) so members can see what's coming and what an
+        // upgrade would add — it advertises the program rather than concealing it.
+        if (!this.isMonthUnlocked(mo.month)) {
+            const outOfPlan = this.isMonthOutOfPlan(mo.month);
+            const note = outOfPlan
+                ? 'Not included in your plan'
+                : 'Unlocks ' + this.formatUnlockDate(this.unlockDateFor(mo.month));
+            return '<div class="program-month-card month-locked" aria-disabled="true">' +
+                '<span class="pmc-badge">Month ' + mo.month + '</span>' +
+                '<h3 class="pmc-title">' + this.esc(this.monthName(mo.month)) + '</h3>' +
+                '<p class="pmc-sub">' + this.esc(note) + '</p>' +
+                (outOfPlan ? '<a class="pmc-upgrade" href="/index.html#/pricing">Upgrade</a>' : '') +
+                '</div>';
+        }
         const p = this.monthProgress(mo.month);
         const complete = p.total > 0 && p.done >= p.total;
         const pct = p.total ? Math.round((p.done / p.total) * 100) : 0;

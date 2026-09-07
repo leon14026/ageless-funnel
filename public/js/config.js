@@ -39,6 +39,10 @@ const CONFIG = {
         LAUNCH_MODE: 'preorder',
         // Legacy flag kept for back-compat; LAUNCH_MODE is the source of truth.
         DEMO_MODE: false,
+        // Program launch date (YYYY-MM-DD). The content drip is anchored at whichever is LATER:
+        // this date or the member's access start — so pre-order buyers don't burn months before
+        // the program exists. Month N unlocks N months after that anchor.
+        PROGRAM_START: '2026-09-20',
     }
 };
 

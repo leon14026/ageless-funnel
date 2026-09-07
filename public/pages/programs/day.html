@@ -85,6 +85,7 @@
             DAY = parseInt(p.get('day'), 10) || 1;
             document.getElementById('back-link').href = 'month.html?month=' + MONTH;
             await Programs.load();
+            await Programs.loadAccess();
             await Programs.loadCompletions();
 
             const mo = Programs.getMonth(MONTH);
@@ -92,6 +93,21 @@
             if (!mo || !d) {
                 document.getElementById('day-header').style.display = 'none';
                 document.getElementById('error-state').style.display = 'block';
+                return;
+            }
+            // Guard the direct URL too, not just the links into it.
+            if (!Programs.isMonthUnlocked(MONTH)) {
+                document.getElementById('day-header').style.display = 'none';
+                const es = document.getElementById('error-state');
+                es.innerHTML = Programs.isMonthOutOfPlan(MONTH)
+                    ? '<span class="error-icon">🔒</span><h3>Not included in your plan</h3>' +
+                      '<p>Month ' + MONTH + ' isn\'t part of the plan you purchased.</p>' +
+                      '<a href="/index.html#/pricing" class="btn btn-primary">See plans</a>'
+                    : '<span class="error-icon">🔒</span><h3>Unlocks soon</h3>' +
+                      '<p>Month ' + MONTH + ' unlocks on ' +
+                      Programs.formatUnlockDate(Programs.unlockDateFor(MONTH)) + '.</p>' +
+                      '<a href="index.html" class="btn btn-primary">All Months</a>';
+                es.style.display = 'block';
                 return;
             }
             DAYDATA = d;

@@ -4201,3 +4201,15 @@ a.day-card:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(59,3
 .pmc-bar { height: 100%; background: var(--color-success); border-radius: 999px; transition: width .3s; }
 .pmc-meta { font-size: 0.78rem; color: var(--color-text-muted); font-weight: 600; }
 .program-month-card.month-complete { border-color: var(--color-success); }
+/* Locked months stay visible but clearly inert: still on the drip, or beyond the purchased plan. */
+.program-month-card.month-locked {
+    background: var(--color-light-bg, #faf6f2); border-style: dashed; cursor: default;
+    box-shadow: none; opacity: 0.75;
+}
+.program-month-card.month-locked:hover { transform: none; box-shadow: none; border-color: var(--color-border); }
+.program-month-card.month-locked .pmc-title { color: var(--color-text-muted); }
+.program-month-card.month-locked::after { content: '🔒'; position: absolute; top: 1.1rem; right: 1.25rem; font-size: 1rem; }
+.pmc-upgrade {
+    align-self: flex-start; margin-top: 0.35rem; font-size: 0.78rem; font-weight: 700;
+    color: var(--color-rose-dark); text-decoration: underline;
+}

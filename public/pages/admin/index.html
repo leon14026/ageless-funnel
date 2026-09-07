@@ -132,7 +132,9 @@
 
             var collected=pre.filter(function(p){return p.status==='verified'||p.status==='activated';})
                              .reduce(function(a,p){return a+Number(p.amount_bdt||0);},0);
-            var activeMembers=ent.filter(function(e){return e.status==='active'&&new Date(e.ends_at).getTime()>=now;}).length;
+            // ends_at === null means lifetime access (the current model); a date is a legacy timed grant.
+            var entActive=function(e){return e.status==='active'&&(!e.ends_at||new Date(e.ends_at).getTime()>=now);};
+            var activeMembers=ent.filter(entActive).length;
             var pending=pre.filter(function(p){return p.status==='pending';}).length;
             var awaiting=pre.filter(function(p){return p.status==='verified';}).length;
             var payFlags=pay.filter(function(p){return p.status==='unmatched'||p.status==='amount_mismatch';}).length;
@@ -163,9 +165,10 @@
             table(document.getElementById('pay-table'),['When','TrxID','Amount','From','Status'],pay,function(p){
                 return '<tr><td>'+dt(p.created_at)+'</td><td>'+esc(p.trx_id)+'</td><td>'+tk(p.amount_bdt)+'</td><td>'+esc(p.sender_msisdn||'—')+'</td><td>'+badge(p.status)+'</td></tr>';});
 
-            table(document.getElementById('ent-table'),['Email','Source','Status','Starts','Ends','Active now'],ent,function(e){
-                var active=e.status==='active'&&new Date(e.ends_at).getTime()>=now;
-                return '<tr><td>'+esc(e.customer_email)+'</td><td>'+esc(e.source)+'</td><td>'+badge(e.status)+'</td><td>'+dt(e.starts_at)+'</td><td>'+dt(e.ends_at)+'</td><td>'+(active?'✅':'—')+'</td></tr>';});
+            table(document.getElementById('ent-table'),['Email','Source','Scope','Status','Starts','Ends','Active now'],ent,function(e){
+                var active=entActive(e);
+                var scope=e.months?('Months 1–'+e.months):'—';
+                return '<tr><td>'+esc(e.customer_email)+'</td><td>'+esc(e.source)+'</td><td>'+esc(scope)+'</td><td>'+badge(e.status)+'</td><td>'+dt(e.starts_at)+'</td><td>'+(e.ends_at?dt(e.ends_at):'Lifetime')+'</td><td>'+(active?'✅':'—')+'</td></tr>';});
 
             table(document.getElementById('wait-table'),['When','Name','Email','Phone'],wait,function(w){
                 return '<tr><td>'+dt(w.created_at)+'</td><td>'+esc(w.name)+'</td><td>'+esc(w.email)+'</td><td>'+esc(w.phone||'—')+'</td></tr>';});

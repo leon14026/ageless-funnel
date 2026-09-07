@@ -68,6 +68,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             await Programs.load();
+            await Programs.loadAccess();
             await Programs.loadCompletions();
             const months = Programs._data.months || [];
             const done = Programs.completedCount();

@@ -85,13 +85,31 @@
         document.addEventListener('DOMContentLoaded', async () => {
             const M = parseInt(new URLSearchParams(location.search).get('month'), 10) || 1;
             await Programs.load();
+            await Programs.loadAccess();
             await Programs.loadCompletions();
             const mo = Programs.getMonth(M);
-            if (!mo) {
+            const hideBody = () => {
                 document.getElementById('m-header').style.display = 'none';
                 document.querySelector('.progress-section').style.display = 'none';
                 document.getElementById('days').style.display = 'none';
                 document.getElementById('error-state').style.display = 'block';
+            };
+            if (!mo) { hideBody(); return; }
+            // Locked: still on the drip, or beyond what this member's plan includes.
+            if (!Programs.isMonthUnlocked(M)) {
+                hideBody();
+                const es = document.getElementById('error-state');
+                if (Programs.isMonthOutOfPlan(M)) {
+                    es.innerHTML = '<span class="error-icon">🔒</span><h3>Not included in your plan</h3>' +
+                        '<p>Month ' + M + ' isn\'t part of the plan you purchased.</p>' +
+                        '<a href="/index.html#/pricing" class="btn btn-primary">See plans</a> ' +
+                        '<a href="index.html" class="btn btn-secondary">All Months</a>';
+                } else {
+                    es.innerHTML = '<span class="error-icon">🔒</span><h3>Unlocks soon</h3>' +
+                        '<p>Month ' + M + ' unlocks on ' +
+                        Programs.formatUnlockDate(Programs.unlockDateFor(M)) + '.</p>' +
+                        '<a href="index.html" class="btn btn-primary">All Months</a>';
+                }
                 return;
             }
             document.title = `Month ${M} · ${Programs.monthName(M)} | Ageless by Tulee`;
@@ -110,8 +128,8 @@
             const nums = (Programs._data.months || []).map(x => x.month);
             const prev = document.getElementById('prev-month');
             const next = document.getElementById('next-month');
-            if (nums.includes(M - 1)) { prev.href = `month.html?month=${M - 1}`; prev.style.visibility = 'visible'; }
-            if (nums.includes(M + 1)) { next.href = `month.html?month=${M + 1}`; next.style.visibility = 'visible'; }
+            if (nums.includes(M - 1) && Programs.isMonthUnlocked(M - 1)) { prev.href = `month.html?month=${M - 1}`; prev.style.visibility = 'visible'; }
+            if (nums.includes(M + 1) && Programs.isMonthUnlocked(M + 1)) { next.href = `month.html?month=${M + 1}`; next.style.visibility = 'visible'; }
             document.getElementById('month-nav').style.display = 'flex';
         });
     </script>
