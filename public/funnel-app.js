@@ -23,6 +23,7 @@
         '/waitlist/thank-you': 'page-waitlist-thank-you',
         '/privacy': 'page-privacy',
         '/terms': 'page-terms',
+        '/refund': 'page-refund',
         '/disclaimer': 'page-disclaimer'
     };
 
