@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #333;
+         -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .wrap { padding: 54px 56px; max-width: 720px; }
+  .title { font-size: 24px; font-weight: 700; color: #3B1F2B; }
+  .kicker { font-size: 13px; color: #8A8A8A; margin-top: 2px; }
+  .rule { height: 3px; width: 60px; background: #E9A7B5; margin: 14px 0 26px; border-radius: 2px; }
+  h2 { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: #8A8A8A; margin: 26px 0 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  td, th { padding: 9px 12px; border-bottom: 1px solid #ECE6E1; text-align: left; vertical-align: top; }
+  .kv td:first-child { width: 190px; color: #8A8A8A; font-weight: 600; }
+  .kv td:last-child { color: #3B3B3B; }
+  .price th { background: #FBF3F0; color: #3B1F2B; border-bottom: 1px solid #E8E4DF; font-size: 12px;
+              text-transform: uppercase; letter-spacing: .04em; }
+  .price td.p { font-weight: 700; color: #3B1F2B; }
+  .note { font-size: 12px; color: #8A8A8A; margin-top: 12px; }
+  .foot { margin-top: 40px; font-size: 11.5px; color: #A0A0A0; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="title">Ageless by Tulee</div>
+    <div class="kicker">Website &amp; pricing summary — agelessbytulee.com</div>
+    <div class="rule"></div>
+
+    <h2>What we sell</h2>
+    <table class="kv">
+      <tr><td>Product</td><td>Membership access to an online wellness &amp; fitness program</td></tr>
+      <tr><td>Type</td><td>Digital service — delivered online, no physical goods shipped</td></tr>
+      <tr><td>Website type</td><td>Health, wellness &amp; fitness · online membership / digital services</td></tr>
+      <tr><td>Delivery</td><td>Instant online access; login emailed to the customer after payment</td></tr>
+      <tr><td>Currency</td><td>Bangladeshi Taka (৳), also shown in USD</td></tr>
+    </table>
+
+    <h2>Products &amp; pricing</h2>
+    <table class="price">
+      <tr><th>Product</th><th>Term</th><th>Price (BDT)</th><th>Price (USD)</th></tr>
+      <tr><td>Program membership</td><td>1 month</td><td class="p">৳4,999</td><td>$49.99</td></tr>
+      <tr><td>Program membership</td><td>3 months</td><td class="p">৳5,999</td><td>$59.99</td></tr>
+      <tr><td>Program membership</td><td>6 months</td><td class="p">৳7,499</td><td>$74.99</td></tr>
+    </table>
+    <p class="note">One all-inclusive fee per term — a single price covers everything, with no add-ons or per-feature charges.</p>
+
+    <div class="foot">Ageless by Tulee · agelessbytulee.com · hello@agelessbytulee.com</div>
+  </div>
+</body>
+</html>

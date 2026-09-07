@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+  @page { size: A4; margin: 0; }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: 'Segoe UI', Arial, sans-serif; color: #3B3B3B;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  .page { padding: 0 44px 26px; }
+  .hero {
+    background: linear-gradient(135deg, #3B1F2B 0%, #6E3B4E 100%);
+    color: #fff; padding: 22px 44px 18px; display: flex; align-items: center; gap: 20px;
+  }
+  .hero img.logo { height: 60px; width: 60px; background: #fff; border-radius: 12px; padding: 6px; }
+  .hero h1 { margin: 0; font-size: 26px; font-family: Georgia, 'Playfair Display', serif; }
+  .hero .sub { margin: 3px 0 0; font-size: 13px; color: #E9A7B5; font-weight: 600; letter-spacing: .3px; }
+  .hero .site { margin: 6px 0 0; font-size: 12px; color: rgba(255,255,255,.85); }
+  h2 { color: #3B1F2B; font-size: 16px; margin: 15px 0 6px; border-bottom: 2px solid #E9A7B5; padding-bottom: 4px; }
+  p { font-size: 12.5px; line-height: 1.55; margin: 6px 0; }
+  .lead { font-size: 13px; color: #5A5A5A; }
+  ul { margin: 6px 0; padding-left: 18px; }
+  li { font-size: 12.5px; line-height: 1.6; }
+  .row { display: flex; gap: 16px; align-items: flex-start; }
+  .row .txt { flex: 1; }
+  .row img { width: 160px; height: 150px; object-fit: contain; background: #fff; border-radius: 10px; border: 1px solid #ECE6E1; }
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 12.5px; }
+  th, td { border: 1px solid #E8E4DF; padding: 8px 12px; text-align: left; }
+  th { background: #FBF3F0; color: #3B1F2B; }
+  td.price { font-weight: 700; color: #3B1F2B; }
+  .cards { display: flex; gap: 12px; margin-top: 8px; }
+  .card { flex: 1; border: 1px solid #ECE6E1; border-radius: 10px; padding: 10px 12px; font-size: 11.5px; }
+  .card b { color: #3B1F2B; display: block; margin-bottom: 3px; }
+  .footer { margin-top: 14px; border-top: 1px solid #E8E4DF; padding-top: 10px; font-size: 11.5px; color: #8A8A8A; }
+</style>
+</head>
+<body>
+  <div class="hero">
+    <img class="logo" src="services-assets/logo.png" alt="">
+    <div>
+      <h1>Ageless by Tulee</h1>
+      <div class="sub">Guided At-Home Wellness for Women 40+</div>
+      <div class="site">agelessbytulee.com</div>
+    </div>
+  </div>
+
+  <div class="page">
+    <h2>About</h2>
+    <p class="lead">Ageless by Tulee is an online wellness program for women aged 40 and above. From home, on any
+    device, members follow guided video workouts, track their nutrition, get custom meal plans, monitor their
+    progress, and receive coaching — all through a private member platform.</p>
+
+    <h2>What's included</h2>
+    <p>One membership is <b>all-inclusive</b> — a single price unlocks everything below, with no add-ons and
+    nothing billed per feature. Access is a one-time payment (not an auto-renewing subscription), and every
+    membership includes:</p>
+    <div class="row">
+      <div class="txt">
+        <ul>
+          <li><b>Guided workout library</b> — follow-along, joint-friendly at-home routines that progress over the program</li>
+          <li><b>Nutrition tracking</b> — a food log built around everyday Bangladeshi meals, with calorie and macro goals</li>
+          <li><b>Custom meal plans</b> — goal-based plans using whole foods, with personalized grocery lists</li>
+          <li><b>Progress tracking</b> — weight, body measurements, and trend charts over time</li>
+          <li><b>Coaching &amp; community</b> — guidance from Coach Tulee and regular online group meetings</li>
+          <li><b>Member area</b> — a private account for workouts, tracking, and plans</li>
+        </ul>
+      </div>
+      <img src="services-assets/coach.jpg" alt="">
+    </div>
+
+    <h2>Plans</h2>
+    <p>One all-inclusive membership, available as a 1-, 3-, or 6-month plan — a one-time payment, not a subscription. A single fee per term covers everything above; nothing is billed separately. See agelessbytulee.com for current pricing.</p>
+
+    <div class="row" style="margin-top:8px;">
+      <img src="services-assets/exercise.jpg" alt="">
+      <div class="txt">
+        <h2 style="margin-top:0;">Getting started</h2>
+        <p>After payment, your account is activated and your login is emailed to you. Sign in at
+        agelessbytulee.com and everything is ready — workouts, nutrition tools, meal plans, and your progress
+        dashboard — for the length of your chosen term. No gym, and no equipment needed to begin.</p>
+      </div>
+    </div>
+
+    <h2>Free tools (no purchase required)</h2>
+    <div class="cards">
+      <div class="card"><b>Wellness quiz</b>A short quiz that suggests a suitable starting plan.</div>
+      <div class="card"><b>Health calculators</b>BMI/BMR and a healthy-years estimate for visitors.</div>
+    </div>
+
+    <div class="footer">
+      <b>Ageless by Tulee</b> &nbsp;·&nbsp; agelessbytulee.com &nbsp;·&nbsp; hello@agelessbytulee.com<br>
+      Every service is delivered online through the member platform.
+    </div>
+  </div>
+</body>
+</html>
