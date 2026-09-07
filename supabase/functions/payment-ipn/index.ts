@@ -91,11 +91,15 @@ Deno.serve(async (request) => {
     // Atomic fulfilment: marks the order completed AND grants the entitlement in one transaction
     // (row-locked, idempotent). Avoids the earlier split-write race where access could be granted
     // without the order being marked completed.
+    // The whole validation response is stored on the order as chargeback evidence
+    // (bank_tran_id, masked card_no, issuer, risk level, net store_amount...). SSLCommerz
+    // never returns a full PAN or CVV, so nothing sensitive is persisted.
     const { data: outcome, error: fulfillError } = await supabase.rpc("fulfill_card_order", {
       p_transaction_id: transactionId,
       p_user_id: user.id,
       p_payment_reference: validationId,
       p_payment_method: validation.card_type || "online",
+      p_gateway: validation,
     });
     if (fulfillError) throw fulfillError;
     if (outcome === "not_found") throw new Error("Order not found for fulfilment.");

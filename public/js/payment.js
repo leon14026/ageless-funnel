@@ -59,9 +59,11 @@ const Payment = {
         // Defense in depth: scope to the signed-in user explicitly, on top of the orders RLS policy.
         const { data: { user } } = await window.supabaseClient.auth.getUser();
         if (!user) return { data: [], error: null };
+        // Explicit column list: orders now also hold gateway dispute evidence (risk scoring,
+        // issuer, masked card, full validation payload) that a member has no reason to read.
         return window.supabaseClient
             .from('orders')
-            .select('*')
+            .select('id, transaction_id, product_name, amount, currency, status, access_months, activation_status, payment_method, paid_at, created_at')
             .eq('user_id', user.id)
             .order('created_at', { ascending: false })
             .limit(limit || 50);
