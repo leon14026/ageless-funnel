@@ -1,4 +1,20 @@
+# SSLCommerz card flow - all four must stay verify_jwt = false:
+#  * payment-ipn and payment-return are called by SSLCommerz (server POST / browser POST) with no
+#    auth header. JWT on means the IPN is rejected before our code runs, or the customer pays and
+#    lands on a 401.
+#  * initiate-payment and validate-payment are called from the browser with the PUBLIC publishable
+#    key, which is no security boundary anyway; protection is server-side pricing, rate limits and
+#    the honeypot.
 [functions.payment-ipn]
+verify_jwt = false
+
+[functions.payment-return]
+verify_jwt = false
+
+[functions.initiate-payment]
+verify_jwt = false
+
+[functions.validate-payment]
 verify_jwt = false
 
 [functions.ingest-bkash]

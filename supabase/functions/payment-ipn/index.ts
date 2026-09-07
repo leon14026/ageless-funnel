@@ -100,6 +100,14 @@ Deno.serve(async (request) => {
     if (fulfillError) throw fulfillError;
     if (outcome === "not_found") throw new Error("Order not found for fulfilment.");
 
+    // 'refunded'/'not_grantable' are terminal: the payment is valid but the order must not be
+    // granted (money already returned, or a lost race). Acknowledge so SSLCommerz stops retrying,
+    // and log loudly so it can be reconciled by hand.
+    if (outcome === "refunded" || outcome === "not_grantable") {
+      console.error(`IPN for ${transactionId} not granted: ${outcome}. Needs manual review.`);
+      return new Response("Acknowledged.", { status: 200 });
+    }
+
     return new Response("Payment verified.", { status: 200 });
   } catch (error) {
     console.error(error);
