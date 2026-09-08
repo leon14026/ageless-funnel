@@ -15,16 +15,21 @@ function requireEnv(name: string) {
 async function notifyOwner(subject: string, text: string) {
   const key = Deno.env.get("RESEND_API_KEY");
   const to = Deno.env.get("NOTIFY_EMAIL");
-  if (!key || !to) return;
+  if (!key || !to) {
+    // Loud, because a held payment nobody is told about is money taken with no access given.
+    console.error("notifyOwner SKIPPED: RESEND_API_KEY and/or NOTIFY_EMAIL are not set. Subject:", subject);
+    return;
+  }
   const from = Deno.env.get("RESEND_FROM") || "Ageless Alerts <noreply@agelessbytulee.com>";
   try {
-    await fetch("https://api.resend.com/emails", {
+    const res = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
       body: JSON.stringify({ from, to, subject, text }),
     });
+    if (!res.ok) console.error("notifyOwner FAILED:", res.status, await res.text());
   } catch (error) {
-    console.error("notifyOwner failed:", error);
+    console.error("notifyOwner FAILED to send:", error);
   }
 }
 
@@ -99,7 +104,12 @@ Deno.serve(async (request) => {
       .eq("transaction_id", transactionId)
       .single();
     if (orderError || !order) throw orderError || new Error("Order not found.");
-    if (order.status === "completed") return new Response("Already processed.", { status: 200 });
+    // A held order is ALSO status 'completed', so don't short-circuit on it: letting SSLCommerz's
+    // retry fall through re-runs the held branch and gives the owner alert another chance to send.
+    // fulfill_card_order returns 'held' idempotently and grants nothing, so re-entry is safe.
+    if (order.status === "completed" && order.activation_status !== "on_hold") {
+      return new Response("Already processed.", { status: 200 });
+    }
     if (validation.tran_id !== transactionId ||
         validation.currency !== "BDT" ||
         Number(validation.amount) !== Number(order.amount)) {

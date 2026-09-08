@@ -95,6 +95,25 @@ const Payment = {
     },
 
     /**
+     * A paid order whose access is held for manual verification (SSLCommerz risk_level != 0).
+     * Used so a held customer sees "we're verifying your payment" rather than being redirected
+     * to the pricing page as though they had never paid.
+     */
+    async getHeldOrder(userId) {
+        if (!userId || !window.supabaseClient) return null;
+        const { data, error } = await window.supabaseClient
+            .from('orders')
+            .select('transaction_id, status, activation_status, created_at')
+            .eq('user_id', userId)
+            .eq('status', 'completed')
+            .eq('activation_status', 'on_hold')
+            .order('created_at', { ascending: false })
+            .limit(1);
+        if (error || !Array.isArray(data) || !data.length) return null;
+        return data[0];
+    },
+
+    /**
      * Combined access scope for the content drip.
      * months     = widest tier bought (so an upgrade widens access rather than conflicting)
      * starts_at  = earliest grant (so an upgrade never restarts the drip clock)

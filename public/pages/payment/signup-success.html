@@ -59,6 +59,19 @@
                 </div>
             </div>
 
+            <!-- SSLCommerz flagged the transaction (risk_level != 0) and we are holding it for a
+                 manual check. The payment succeeded, so never imply it failed - but equally never
+                 claim access is ready, because no entitlement has been granted yet. -->
+            <div id="state-review" hidden>
+                <div class="pay-icon">🔎</div>
+                <h1>Payment received — just verifying</h1>
+                <p>Thank you, your payment came through successfully. For security, this one needs a quick manual check before we open your access &mdash; <strong>please don't pay again</strong>.</p>
+                <p>We'll confirm by email as soon as it's done, usually within one business day. If you'd like an update sooner, email <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a>.</p>
+                <div class="pay-actions">
+                    <a href="/" class="f-btn f-btn-outline">Back to Home</a>
+                </div>
+            </div>
+
             <div id="state-error" hidden>
                 <div class="pay-icon">⚠️</div>
                 <h1>We couldn't find that payment</h1>
@@ -79,7 +92,7 @@
             var tranId = new URLSearchParams(window.location.search).get('tran_id');
 
             function show(state) {
-                ['checking', 'success', 'pending', 'error'].forEach(function (s) {
+                ['checking', 'success', 'review', 'pending', 'error'].forEach(function (s) {
                     var el = document.getElementById('state-' + s);
                     if (el) el.hidden = (s !== state);
                 });
@@ -99,6 +112,13 @@
                         body: JSON.stringify({ transaction_id: tranId })
                     });
                     var data = await res.json();
+                    // A held order is also status 'completed' (the money was captured), so check
+                    // activation_status first - otherwise we would tell a customer whose access is
+                    // on hold that they are in, and then bounce them at the login gate.
+                    if (res.ok && data && data.activation_status === 'on_hold') {
+                        show('review');
+                        return;   // stop polling; a human has to release this
+                    }
                     if (res.ok && data && data.status === 'completed') {
                         show('success');
                         if (typeof window.gtag === 'function') {

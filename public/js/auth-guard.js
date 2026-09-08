@@ -47,10 +47,37 @@ const AuthGuard = {
         }
         const hasAccess = await Payment.hasActiveEntitlement(session.user.id);
         if (!hasAccess) {
+            // Paid, but the gateway flagged it and access is held for a manual check. Sending this
+            // person to the pricing page would look like their payment never landed.
+            if (typeof Payment.getHeldOrder === 'function') {
+                try {
+                    const held = await Payment.getHeldOrder(session.user.id);
+                    if (held) { this.showHeldNotice(); return false; }
+                } catch (e) { /* fall through to the normal redirect */ }
+            }
             window.location.href = this.pricingUrl();
             return false;
         }
         return true;
+    },
+
+    /** Full-page notice for a member whose payment is awaiting manual verification. */
+    showHeldNotice() {
+        document.body.innerHTML =
+            '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;' +
+            'font-family:Nunito,system-ui,sans-serif;background:#faf6f2;color:#2c2420;">' +
+            '<div style="background:#fff;border-radius:16px;box-shadow:0 10px 40px rgba(0,0,0,.08);' +
+            'max-width:480px;width:100%;padding:2.5rem 2rem;text-align:center;">' +
+            '<div style="font-size:3rem;line-height:1;">&#128270;</div>' +
+            '<h1 style="font-size:1.6rem;margin:.75rem 0 .5rem;">We&rsquo;re verifying your payment</h1>' +
+            '<p style="color:#6b5f57;line-height:1.6;">Your payment went through and your account is set up. ' +
+            'For security this one needs a quick manual check before we open your access &mdash; ' +
+            '<strong>please don&rsquo;t pay again</strong>.</p>' +
+            '<p style="color:#6b5f57;line-height:1.6;">We&rsquo;ll email you as soon as it&rsquo;s done, usually ' +
+            'within one business day. Questions? <a href="mailto:support@agelessbytulee.com" ' +
+            'style="color:#c96a80;">support@agelessbytulee.com</a></p>' +
+            '<p style="margin-top:1.5rem;"><a href="/" style="color:#c96a80;">Back to Home</a></p>' +
+            '</div></div>';
     },
 
     /**
