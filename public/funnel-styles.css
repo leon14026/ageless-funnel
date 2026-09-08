@@ -3252,6 +3252,9 @@ textarea.f-input {
     font-size: 0.75rem; line-height: 1.5; opacity: 0.75;
 }
 .f-footer-legal-block p { margin: 0; }
+/* .f-footer a is display:block for the link columns - keep links inline here so the
+   compliance line stays on one row instead of stacking. */
+.f-footer-legal-block a { display: inline; margin: 0; font-size: inherit; }
 /* "Pay With" logo block (~8.9:1). Scales down to the container, but a min-width stops the
    logos becoming unreadable on narrow phones - it scrolls slightly instead. */
 .f-payment-banner-wrap {
