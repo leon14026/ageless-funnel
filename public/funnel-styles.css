@@ -3262,10 +3262,12 @@ textarea.f-input {
 .f-footer-legal-block a { display: inline; margin: 0; font-size: inherit; }
 /* "Pay With" logo block (~8.9:1). Scales down to the container, but a min-width stops the
    logos becoming unreadable on narrow phones - it scrolls slightly instead. */
+/* Shrink-wrap to the logo strip and centre it: a fixed max-width alone left the box
+   hard against the left edge under a full-width divider, which read as misaligned. */
 .f-payment-banner-wrap {
-    margin-top: 0.75rem; background: #fff; border-radius: var(--radius-md);
+    margin: 0.75rem auto 0; background: #fff; border-radius: var(--radius-md);
     padding: 0.45rem 0.6rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
-    max-width: 620px;
+    width: fit-content; max-width: 100%;
 }
 .f-payment-banner {
     display: block; width: 100%; max-width: 600px; min-width: 460px; height: auto;
