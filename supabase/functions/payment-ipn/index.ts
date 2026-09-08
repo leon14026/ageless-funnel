@@ -8,6 +8,26 @@ function requireEnv(name: string) {
   return value;
 }
 
+/**
+ * Best-effort alert to the owner (same Resend setup as ingest-bkash). Never throws: a mail
+ * failure must not make us reject an IPN we have already acted on.
+ */
+async function notifyOwner(subject: string, text: string) {
+  const key = Deno.env.get("RESEND_API_KEY");
+  const to = Deno.env.get("NOTIFY_EMAIL");
+  if (!key || !to) return;
+  const from = Deno.env.get("RESEND_FROM") || "Ageless Alerts <noreply@agelessbytulee.com>";
+  try {
+    await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${key}`, "Content-Type": "application/json" },
+      body: JSON.stringify({ from, to, subject, text }),
+    });
+  } catch (error) {
+    console.error("notifyOwner failed:", error);
+  }
+}
+
 async function findOrInviteUser(supabase: ReturnType<typeof createClient>, email: string, orderId: string) {
   let pageNumber = 1;
 
@@ -104,11 +124,37 @@ Deno.serve(async (request) => {
     if (fulfillError) throw fulfillError;
     if (outcome === "not_found") throw new Error("Order not found for fulfilment.");
 
+    // SSLCommerz asks us to hold and verify the customer when risk_level = 1. The payment and
+    // evidence are recorded, but no access is granted until it is released by hand.
+    if (outcome === "held") {
+      console.warn(`IPN ${transactionId} HELD for review (risk_level=${validation.risk_level}).`);
+      await notifyOwner(
+        `⚠️ Held for review: card payment ${transactionId}`,
+        [
+          `A card payment was flagged by SSLCommerz and is ON HOLD - no access has been granted.`,
+          ``,
+          `Transaction: ${transactionId}`,
+          `Amount:      ${validation.amount} ${validation.currency}`,
+          `Risk:        level ${validation.risk_level} (${validation.risk_title || "-"})`,
+          `Card:        ${validation.card_no || "-"} ${validation.card_brand || ""} ${validation.card_issuer || ""}`,
+          `Bank tran:   ${validation.bank_tran_id || "-"}`,
+          ``,
+          `Verify the customer, then release access by running in the Supabase SQL editor:`,
+          `  select public.release_held_order(id) from public.orders where transaction_id = '${transactionId}';`,
+        ].join("\n"),
+      );
+      return new Response("Held for review.", { status: 200 });
+    }
+
     // 'refunded'/'not_grantable' are terminal: the payment is valid but the order must not be
     // granted (money already returned, or a lost race). Acknowledge so SSLCommerz stops retrying,
     // and log loudly so it can be reconciled by hand.
     if (outcome === "refunded" || outcome === "not_grantable") {
       console.error(`IPN for ${transactionId} not granted: ${outcome}. Needs manual review.`);
+      await notifyOwner(
+        `Card payment ${transactionId} not granted (${outcome})`,
+        `An IPN arrived for ${transactionId} but access was not granted: ${outcome}. Needs manual reconciliation.`,
+      );
       return new Response("Acknowledged.", { status: 200 });
     }
 
