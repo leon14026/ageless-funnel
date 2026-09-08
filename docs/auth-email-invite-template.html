@@ -1,0 +1,80 @@
+<!--
+  Supabase Auth -> "Invite user" email template.
+  Paste the markup below into: Supabase Dashboard > Authentication > Emails > Invite user.
+  Suggested subject:  Welcome to Ageless by Tulee - set your password
+
+  Kept in the repo so the template is version-controlled rather than living only in a dashboard.
+
+  {{ .ConfirmationURL }} is Supabase's variable for the invite link. It must stay exactly as-is,
+  and it already carries the redirect to /pages/auth/reset-password.html that grant-access and
+  payment-ipn set, so the customer lands on the set-password screen.
+
+  This one template is sent to BOTH bKash pre-order and card customers, so the wording is
+  deliberately payment-agnostic. Table layout + inline styles for email-client compatibility.
+-->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background:#faf6f2;padding:32px 12px;font-family:'Nunito',Segoe UI,Helvetica,Arial,sans-serif;">
+  <tr>
+    <td align="center">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0" style="max-width:520px;background:#ffffff;border-radius:16px;padding:36px 32px;">
+
+        <tr>
+          <td align="center" style="font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#3b1f2b;padding-bottom:4px;">
+            Ageless <span style="color:#c96a80;">by Tulee</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="font-family:Georgia,'Times New Roman',serif;font-size:26px;line-height:1.25;color:#3b1f2b;padding:18px 0 10px;">
+            Welcome — your place is confirmed
+          </td>
+        </tr>
+
+        <tr>
+          <td style="font-size:15px;line-height:1.65;color:#6b5f57;padding-bottom:8px;">
+            Thank you for joining Ageless by Tulee. Your payment is confirmed and your account is ready.
+            Choose your password below to get into your member area.
+          </td>
+        </tr>
+
+        <tr>
+          <td align="center" style="padding:24px 0 18px;">
+            <a href="{{ .ConfirmationURL }}"
+               style="display:inline-block;background:#c96a80;color:#ffffff;text-decoration:none;font-weight:700;font-size:16px;padding:14px 32px;border-radius:999px;">
+              Set my password
+            </a>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="font-size:14px;line-height:1.65;color:#6b5f57;padding-bottom:6px;">
+            Your program opens month by month. <strong>Month 1 is ready as soon as the program launches</strong>,
+            and each following month unlocks a month later, so you can move at a steady, joint-friendly pace.
+          </td>
+        </tr>
+
+        <tr>
+          <td style="font-size:12.5px;line-height:1.6;color:#8a8078;padding-top:14px;border-top:1px solid #eee3da;">
+            If the button doesn't work, copy and paste this link into your browser:<br>
+            <span style="word-break:break-all;color:#c96a80;">{{ .ConfirmationURL }}</span>
+          </td>
+        </tr>
+
+        <tr>
+          <td style="font-size:13px;line-height:1.6;color:#6b5f57;padding-top:16px;">
+            Questions? Just reply to this email, or write to
+            <a href="mailto:support@agelessbytulee.com" style="color:#c96a80;">support@agelessbytulee.com</a>.
+          </td>
+        </tr>
+
+        <tr>
+          <td style="font-size:11px;line-height:1.55;color:#a89e96;padding-top:18px;">
+            Ageless by Tulee is a concern of Shape N' Shine and Combat Gym by Tulee.
+            Card payments are processed by our payment partner and may appear on your statement
+            under the processing entity's name.
+          </td>
+        </tr>
+
+      </table>
+    </td>
+  </tr>
+</table>
