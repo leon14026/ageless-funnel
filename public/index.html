@@ -1126,15 +1126,34 @@
                 </div>
                 <div>
                     <h4>Legal</h4>
+                    <a href="#/about" data-link>About Us</a>
                     <a href="#/privacy" data-link>Privacy Policy</a>
                     <a href="#/terms" data-link>Terms of Service</a>
                     <a href="#/refund" data-link>Refund &amp; Cancellation</a>
+                    <a href="#/delivery" data-link>Delivery &amp; Access</a>
                 </div>
                 <div>
                     <h4>Contact</h4>
                     <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a>
+                    <a href="tel:+8801727217767">01727217767</a>
                 </div>
             </div>
+
+            <!-- Merchant details required for payment-gateway compliance -->
+            <div class="f-footer-legal-block">
+                <p><strong>Shape N' Shine</strong> &mdash; trading as Ageless by Tulee</p>
+                <p>Proprietor: Shamima Akhtar</p>
+                <p>Registered address: 48 Siddheswari Road, Dhaka 1217, Bangladesh</p>
+                <p>Trade Licence No: TRAD/DSCC/223201/2019</p>
+                <p>Phone: <a href="tel:+8801727217767">01727217767</a> &middot;
+                   Email: <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a></p>
+                <img src="images/sslcommerz-payment-banner.png"
+                     alt="Accepted payment methods, powered by SSLCommerz"
+                     class="f-payment-banner"
+                     loading="lazy"
+                     onerror="this.style.display='none';">
+            </div>
+
             <div class="f-footer-bottom">
                 <span>&copy; 2026 Ageless by Tulee. All rights reserved.</span>
                 <div class="f-footer-social">
@@ -2113,11 +2132,6 @@
                                 <input type="text" id="preorderReference" class="f-input" placeholder="e.g. 9AB7CD2EF1">
                             </div>
 
-                            <label style="display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 0.5rem; cursor: pointer;">
-                                <input type="checkbox" id="preorderTerms" style="margin-top: 0.25rem; width: 16px; height: 16px; accent-color: var(--color-primary);">
-                                <span class="f-small text-secondary">I agree to the <a href="#/terms" data-link>pre-order terms</a> and understand access opens mid-September 2026.</span>
-                            </label>
-
                             <!-- Honeypot: real users never see/fill this -->
                             <div style="position: absolute; left: -9999px; top: -9999px;" aria-hidden="true">
                                 <label>Company<input type="text" id="checkoutCompany" tabindex="-1" autocomplete="off"></label>
@@ -2126,7 +2140,21 @@
                             <p id="preorderError" class="f-small" style="color: #c0392b; margin-top: 0.5rem;" role="alert"></p>
                         </div>
 
-                        <button type="submit" class="f-btn f-btn-primary f-btn-lg f-btn-block" style="margin-top: 1.5rem;" id="checkoutSubmitBtn">Continue - $74.99 / ৳7,499</button>
+                        <!--
+                          Payment-gateway compliance: a consent checkbox immediately before the
+                          confirm button, blank by default, with all three policies hyperlinked.
+                          Deliberately OUTSIDE the .f-preorder-only block so it applies to the card
+                          checkout too - previously it only existed on the bKash path.
+                        -->
+                        <label style="display: flex; align-items: flex-start; gap: 0.5rem; margin-top: 1.5rem; cursor: pointer;">
+                            <input type="checkbox" id="checkoutTerms" style="margin-top: 0.25rem; width: 16px; height: 16px; accent-color: var(--color-primary);">
+                            <span class="f-small text-secondary">I have read and agree to the
+                                <a href="#/terms" data-link>Terms &amp; Conditions</a>,
+                                <a href="#/privacy" data-link>Privacy Policy</a>, and
+                                <a href="#/refund" data-link>Refund &amp; Cancellation Policy</a>.</span>
+                        </label>
+
+                        <button type="submit" class="f-btn f-btn-primary f-btn-lg f-btn-block" style="margin-top: 1rem;" id="checkoutSubmitBtn">Continue - $74.99 / ৳7,499</button>
                         <p class="text-center f-small text-muted f-gateway-only" style="margin-top: 0.75rem;">Continue to secure SSLCommerz payment. Demo mode simulates the payment step.</p>
                         <p class="text-center f-small text-muted f-preorder-only" style="margin-top: 0.75rem;">Reserve your spot — no card needed.</p>
                     </form>
@@ -2700,6 +2728,65 @@
             <h2>10. Changes to These Terms</h2>
             <p>We may update these Terms from time to time. Material changes will be posted on this page with a revised "last updated" date. Continuing to use the service after changes take effect constitutes acceptance of the updated Terms.</p>
             <p class="f-small text-muted" style="margin-top: 2.5rem; font-size: 0.75rem; line-height: 1.6;">Ageless by Tulee is operated as a concern of Shape n' Shine and Combat Gym by Tulee. Card payments are processed by our payment partner and may appear on your statement under the processing entity's name.</p>
+        </div>
+    </section>
+</div>
+
+<!-- About Us -->
+<div class="funnel-page" id="page-about">
+    <section style="padding-top: 7rem;" class="f-section bg-surface">
+        <div class="f-legal-content">
+            <h1 class="f-h1">About Us</h1>
+
+            <h2>Who We Are</h2>
+            <p><strong>Ageless by Tulee</strong> is a holistic guided wellness program for women, designed around soothing, joint-friendly workouts that support both physical and mental wellbeing &mdash; especially through and after menopause. Members follow tailored exercise routines and Bangladeshi-food-based nutrition plans, join online group sessions for encouragement and guidance, and track their progress from home.</p>
+            <p>The program is built on more than three decades of clinical coaching experience and biomedical science, with every exercise scaled for the body of a woman at any age rather than borrowed from generic fitness content.</p>
+            <p>Ageless by Tulee is the online wing of <strong>Combat Gym by Tulee</strong>, and is operated by <strong>Shape N' Shine</strong>, the registered business that processes payments for the website.</p>
+
+            <h2>Company &amp; Management Details</h2>
+            <table class="f-legal-table">
+                <tr><td>Registered business</td><td>Shape N' Shine</td></tr>
+                <tr><td>Trading as</td><td>Ageless by Tulee (agelessbytulee.com)</td></tr>
+                <tr><td>Proprietor / Management</td><td>Shamima Akhtar</td></tr>
+                <tr><td>Registered address</td><td>48 Siddheswari Road, Dhaka 1217, Bangladesh</td></tr>
+                <tr><td>Trade Licence No.</td><td>TRAD/DSCC/223201/2019</td></tr>
+                <tr><td>Email</td><td><a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a></td></tr>
+                <tr><td>Phone</td><td><a href="tel:+8801727217767">01727217767</a></td></tr>
+            </table>
+
+            <h2>What We Sell</h2>
+            <p>We sell one-time access to a digital fitness and wellness program, priced per number of program months. There is no subscription and no recurring charge. Because the product is digital, it is always available &mdash; there is no stock limit and nothing can go out of stock.</p>
+
+            <h2>Contact Us</h2>
+            <p>The fastest way to reach us is by email at <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a>. We reply within 2&ndash;3 business days. You can also call <a href="tel:+8801727217767">01727217767</a>, or write to us at 48 Siddheswari Road, Dhaka 1217, Bangladesh.</p>
+        </div>
+    </section>
+</div>
+
+<!-- Delivery & Access -->
+<div class="funnel-page" id="page-delivery">
+    <section style="padding-top: 7rem;" class="f-section bg-surface">
+        <div class="f-legal-content">
+            <h1 class="f-h1">Delivery &amp; Access</h1>
+            <p class="last-updated">Last updated: September 2026</p>
+
+            <h2>1. This Is a Digital Product</h2>
+            <p>Ageless by Tulee is delivered entirely online. There is nothing to ship in order to use the program &mdash; you access it by logging in to your member area at agelessbytulee.com from a phone, tablet, or computer.</p>
+
+            <h2>2. How Quickly You Receive Access</h2>
+            <p>Once your payment is confirmed, your account is created and a login email is sent to the address you provided &mdash; normally <strong>within a few minutes</strong>. If it has not arrived within 24 hours, please check your spam folder and then contact <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a>.</p>
+
+            <h2>3. When the Program Content Opens</h2>
+            <p>The program is released month by month. <strong>Month 1 opens as soon as the program launches</strong> (or as soon as you join, if you join after launch), and each following month unlocks one month later, up to the number of months your plan includes. This paced release is deliberate &mdash; it keeps the program safe and sustainable rather than overwhelming.</p>
+
+            <h2>4. Availability</h2>
+            <p>As a digital product, access is always available. There are no stock limits and no possibility of the product being out of stock.</p>
+
+            <h2>5. Physical Items</h2>
+            <p>Purchasing the program does not include any physical product, and none is required to take part. If we ever send a physical item, delivery within Dhaka takes approximately <strong>5 working days</strong> and outside Dhaka approximately <strong>10 working days</strong>, using a courier partner. Any delivery address collected at checkout is used only for that purpose.</p>
+
+            <h2>6. Problems With Access</h2>
+            <p>If your payment succeeded but you cannot access the program, contact <a href="mailto:support@agelessbytulee.com">support@agelessbytulee.com</a> and we will restore your access. See our <a href="#/refund" data-link>Refund &amp; Cancellation Policy</a> for how refunds are handled.</p>
         </div>
     </section>
 </div>

@@ -24,6 +24,8 @@
         '/privacy': 'page-privacy',
         '/terms': 'page-terms',
         '/refund': 'page-refund',
+        '/about': 'page-about',
+        '/delivery': 'page-delivery',
         '/disclaimer': 'page-disclaimer'
     };
 
@@ -729,9 +731,9 @@
 
             var refInput = document.getElementById('preorderReference');
             var reference = refInput ? refInput.value.trim() : '';
-            var terms = document.getElementById('preorderTerms');
+            var terms = document.getElementById('checkoutTerms');
             if (!reference) { if (err) err.textContent = 'Enter your bKash/bank transaction reference.'; return; }
-            if (terms && !terms.checked) { if (err) err.textContent = 'Please agree to the pre-order terms to continue.'; return; }
+            if (terms && !terms.checked) { if (err) err.textContent = 'Please agree to the Terms, Privacy Policy and Refund Policy to continue.'; return; }
 
             var btn = document.getElementById('checkoutSubmitBtn');
             if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
@@ -785,6 +787,13 @@
 
                 if (!window.FunnelCheckout.validateBangladeshiPhone(phone)) {
                     alert('Enter a valid Bangladeshi phone number, such as 01712345678.');
+                    return;
+                }
+
+                // Card path must enforce the same consent as the pre-order path (gateway requirement).
+                var gwTerms = document.getElementById('checkoutTerms');
+                if (gwTerms && !gwTerms.checked) {
+                    alert('Please agree to the Terms & Conditions, Privacy Policy and Refund & Cancellation Policy to continue.');
                     return;
                 }
 
