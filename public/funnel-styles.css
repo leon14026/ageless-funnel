@@ -3247,19 +3247,20 @@ textarea.f-input {
 }
 /* Merchant/compliance details in the footer (registered address, trade licence, payment banner) */
 .f-footer-legal-block {
-    margin-top: 2rem; padding-top: 1.5rem;
+    margin-top: 1rem; padding-top: 0.9rem;
     border-top: 1px solid rgba(255,255,255,0.12);
-    font-size: 0.8125rem; line-height: 1.6; opacity: 0.85;
+    font-size: 0.75rem; line-height: 1.5; opacity: 0.75;
 }
-.f-footer-legal-block p { margin: 0 0 0.25rem; }
+.f-footer-legal-block p { margin: 0; }
 /* "Pay With" logo block (~8.9:1). Scales down to the container, but a min-width stops the
    logos becoming unreadable on narrow phones - it scrolls slightly instead. */
 .f-payment-banner-wrap {
-    margin-top: 1rem; background: #fff; border-radius: var(--radius-md);
-    padding: 0.6rem 0.75rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    margin-top: 0.75rem; background: #fff; border-radius: var(--radius-md);
+    padding: 0.45rem 0.6rem; overflow-x: auto; -webkit-overflow-scrolling: touch;
+    max-width: 620px;
 }
 .f-payment-banner {
-    display: block; width: 100%; max-width: 880px; min-width: 520px; height: auto;
+    display: block; width: 100%; max-width: 600px; min-width: 460px; height: auto;
 }
 /* Company/management details table on the About page */
 .f-legal-table { width: 100%; border-collapse: collapse; margin: 1rem 0 1.5rem; }
