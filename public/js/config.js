@@ -34,7 +34,7 @@ const CONFIG = {
     // Application Settings
     APP: {
         NAME: 'Ageless by Tulee',
-        SUPPORT_URL: 'https://facebook.com/combatgymbytulee',
+        SUPPORT_URL: 'https://www.facebook.com/CombatGym.Tulee',
         // Launch mode: 'demo' | 'preorder' | 'live'. Beta launch = 'preorder'.
         LAUNCH_MODE: 'preorder',
         // Legacy flag kept for back-compat; LAUNCH_MODE is the source of truth.
