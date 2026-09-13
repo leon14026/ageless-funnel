@@ -7,6 +7,10 @@ node_modules/
 .env.*
 *.key
 
+# Database dumps from scripts/backup-db.sh. These hold customer emails, phone
+# numbers, addresses and payment records — never commit them.
+backups/
+
 # Security notes. A completed audit names this site's weaknesses and the controls
 # that cover them; that belongs in private notes, not in a repo that may later be
 # shared or made public.
