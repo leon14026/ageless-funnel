@@ -7,102 +7,182 @@
 # The project is on the Supabase FREE plan, which has NO automatic backups at all
 # (Pro is the first tier with daily backups). This script is the backup.
 #
-# WHY FOUR DUMPS, AND WHY auth MATTERS
-# `supabase db dump` EXCLUDES the auth schema by default. A dump without it looks
-# complete but contains zero member accounts: restoring it would leave
-# access_entitlements rows pointing at users that no longer exist, so your paying
-# members would lose their logins with nothing obviously broken to explain why.
-# auth.sql is the whole reason this script exists rather than a single command.
+# WHY NOT `supabase db dump`
+# The Supabase CLI runs pg_dump inside a Docker container, and there is no flag to
+# skip it. This machine has no Docker. So we call pg_dump directly, which also
+# removes the Docker dependency permanently. Binaries live in tools/pgsql/bin
+# (gitignored, portable, no installer) - see backup-setup-plan.md.
+#
+# WHY auth IS A SEPARATE DUMP, AND WHY IT MATTERS MOST
+# A public-schema-only backup looks complete but contains ZERO member accounts.
+# Restoring it would leave access_entitlements rows pointing at users that no
+# longer exist, so paying members lose their logins with nothing visibly broken
+# to explain why. auth.sql is the whole reason this script exists.
+#
+# WHAT IS COVERED
+#   public              the application tables
+#   private             app_secrets - the Pathao cron reads pathao_batch_secret
+#   supabase_migrations the migration ledger, so a restored project does not try
+#                       to re-apply every migration from scratch
+#   auth                member accounts (data only; the schema itself is created
+#                       by Supabase when a project is provisioned)
+# Not covered, deliberately: storage, realtime, vault, net, cron and graphql are
+# Supabase-managed. The two cron JOBS are recreated by the migrations in
+# supabase/migrations, so they come back with the schema.
 #
 # THE PASSWORD
-# The Supabase CLI asks for the database password (Dashboard > Project Settings >
-# Database - not your API keys). It is never stored here. For an unattended run,
-# export SUPABASE_DB_PASSWORD in your shell first; do not put it in a file that
-# git can see.
+# Supabase Dashboard > Connect (or /settings/database) - NOT your API keys. It is
+# prompted for, never stored, never echoed, and never passed as a command-line
+# argument (which would be visible to other processes). Export PGPASSWORD
+# beforehand for an unattended run; do not put it anywhere git can see.
 #
 # THE OUTPUT IS SENSITIVE
-# Dumps contain customer emails, phone numbers, addresses and payment records.
-# backups/ is gitignored. Keep copies off this machine too - a backup that only
-# exists on the laptop it backs up is not a backup.
+# Dumps contain customer emails, phone numbers, addresses, payment records,
+# password hashes and app secrets. backups/ is gitignored. Keep copies off this
+# machine too - a backup that only exists on the laptop it backs up is not a
+# backup.
 #
 # TO RESTORE (into a fresh project), apply in this order:
 #   roles.sql  ->  schema.sql  ->  auth.sql  ->  data.sql
 # auth before data, so the users that entitlements reference already exist.
+# Load the two data files with triggers suppressed, or the pricing and
+# entitlement triggers will fire and rewrite the rows you are restoring:
+#   psql "$URL" -c 'SET session_replication_role = replica;' -f data.sql
 
 set -euo pipefail
 
 PROJECT_REF="osbaarjfafflzoftojbd"
+SCHEMAS=(public private supabase_migrations)
 
 cd "$(dirname "$0")/.."
+
+# ---------------------------------------------------------------- pg_dump ----
+PGBIN="tools/pgsql/bin"
+if [ -x "${PGBIN}/pg_dump.exe" ]; then
+  PG_DUMP="${PGBIN}/pg_dump.exe"; PG_DUMPALL="${PGBIN}/pg_dumpall.exe"
+elif command -v pg_dump >/dev/null 2>&1; then
+  PG_DUMP="pg_dump"; PG_DUMPALL="pg_dumpall"
+else
+  echo "pg_dump not found." >&2
+  echo "Expected ${PGBIN}/pg_dump.exe - see backup-setup-plan.md to set it up." >&2
+  exit 1
+fi
+
+# pg_dump must be the same version as the server or newer. Warn rather than fail:
+# a mismatch usually still works, and refusing to back up is the worse outcome.
+SERVER_VER="$(cat supabase/.temp/postgres-version 2>/dev/null || echo unknown)"
+DUMP_VER="$("$PG_DUMP" --version | grep -oE '[0-9]+\.[0-9]+' | head -1)"
+echo "pg_dump ${DUMP_VER}  ->  server ${SERVER_VER}"
+
+# ------------------------------------------------------------- connection ----
+# Use the SESSION pooler, not db.<ref>.supabase.co: direct connections are
+# IPv6-only on the free plan. Port 5432 on the pooler is session mode, which
+# pg_dump requires - 6543 is transaction mode and will not work.
+# The CLI wrote the correct URL at link time; read it rather than hardcoding, so
+# a Supabase-side change does not silently break this.
+POOLER_FILE="supabase/.temp/pooler-url"
+if [ -f "$POOLER_FILE" ]; then
+  RAW="$(tr -d '[:space:]' < "$POOLER_FILE")"
+  DB_USER="$(sed -E 's#^[a-z]+://([^:@]+).*#\1#' <<<"$RAW")"
+  DB_HOST="$(sed -E 's#^[a-z]+://[^@]+@([^:/]+).*#\1#' <<<"$RAW")"
+  DB_PORT="$(sed -E 's#.*@[^:/]+:([0-9]+)/.*#\1#' <<<"$RAW")"
+  DB_NAME="$(sed -E 's#.*/([^/?]+)$#\1#' <<<"$RAW")"
+else
+  echo "No ${POOLER_FILE}. Run: npx supabase link --project-ref ${PROJECT_REF}" >&2
+  exit 1
+fi
+[ -n "${DB_PORT:-}" ] || DB_PORT=5432
+[ -n "${DB_NAME:-}" ] || DB_NAME=postgres
+
+echo "Connecting as ${DB_USER}@${DB_HOST}:${DB_PORT}/${DB_NAME}"
+
+if [ -z "${PGPASSWORD:-}" ]; then
+  PGPASSWORD="${SUPABASE_DB_PASSWORD:-}"
+fi
+if [ -z "${PGPASSWORD:-}" ]; then
+  # Prompted, not passed as an argument: command lines are visible to other
+  # processes, environment variables of a running process are not.
+  printf 'Database password: ' >&2
+  read -rs PGPASSWORD
+  printf '\n' >&2
+fi
+export PGPASSWORD
+export PGSSLMODE=require
+export PGCONNECT_TIMEOUT=20
+
 STAMP="$(date +%Y-%m-%d_%H%M)"
 OUT="backups/${STAMP}"
 mkdir -p "$OUT"
-
-SUPABASE="npx --yes supabase"
-
 echo "Backing up ${PROJECT_REF} -> ${OUT}"
 echo
 
-# One-time setup. Both of these are interactive, so this script has to be run
-# from a terminal you can type into.
-if ! $SUPABASE projects list >/dev/null 2>&1; then
-  echo "Not logged in to the Supabase CLI. Opening browser..."
-  $SUPABASE login
-  echo
-fi
+CONN=(-h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME")
+SCHEMA_ARGS=(); for s in "${SCHEMAS[@]}"; do SCHEMA_ARGS+=(-n "$s"); done
 
-if [ ! -f "supabase/.temp/project-ref" ]; then
-  echo "Project not linked yet. Running link (one time)..."
-  $SUPABASE link --project-ref "$PROJECT_REF"
-  echo
-fi
-
+# ------------------------------------------------------------------ dumps ----
+# NOTE: privileges are deliberately NOT excluded. The column-level REVOKEs on
+# orders (gateway_meta, risk_level, card_no, ...) are a security control, and
+# --no-privileges would quietly drop them from the restored database.
 dump() {
-  local label="$1"; local file="$2"; shift 2
+  local label="$1" file="$2" optional="$3"; shift 3
   printf '  %-22s' "$label"
-  if $SUPABASE db dump --linked -f "${OUT}/${file}" "$@" >/dev/null 2>"${OUT}/.err"; then
-    printf 'ok  (%s)\n' "$(wc -c <"${OUT}/${file}" | tr -d ' ') bytes"
+  if "$@" -f "${OUT}/${file}" 2>"${OUT}/.err"; then
+    printf 'ok  (%s bytes)\n' "$(wc -c <"${OUT}/${file}" | tr -d ' ')"
+  elif [ "$optional" = optional ]; then
+    printf 'skipped (not permitted on hosted Supabase - not needed for restore)\n'
+    rm -f "${OUT}/${file}"
   else
-    printf 'FAILED\n\n'
-    cat "${OUT}/.err" >&2
-    exit 1
+    printf 'FAILED\n\n'; cat "${OUT}/.err" >&2; exit 1
   fi
 }
 
-dump "roles"          roles.sql  --role-only
-dump "schema"         schema.sql
-dump "public data"    data.sql   --data-only
-dump "auth (accounts)" auth.sql  --schema auth --data-only
+# Roles are managed by Supabase and a new project provisions its own, so this is
+# best-effort and must never block the three dumps that matter.
+dump "roles"           roles.sql  optional "$PG_DUMPALL" "${CONN[@]}" --roles-only
+dump "schema"          schema.sql required "$PG_DUMP" "${CONN[@]}" --schema-only "${SCHEMA_ARGS[@]}"
+dump "app data"        data.sql   required "$PG_DUMP" "${CONN[@]}" --data-only  "${SCHEMA_ARGS[@]}"
+dump "auth (accounts)" auth.sql   required "$PG_DUMP" "${CONN[@]}" --data-only -n auth
 
 rm -f "${OUT}/.err"
 echo
 
-# A dump that ran without error can still be hollow. Check the things whose loss
-# would be silent and unrecoverable, rather than trusting the exit codes above.
+# --------------------------------------------------------------- verify ------
+# A dump can succeed and still be hollow, so count actual rows inside the COPY
+# blocks rather than trusting exit codes or the mere presence of a table name.
+rows() {  # rows <file> <schema.table>
+  awk -v t="COPY $2 " '
+    index($0, t) == 1 { inblock = 1; next }
+    inblock && $0 == "\\." { inblock = 0 }
+    inblock { n++ }
+    END { print n + 0 }' "$1" 2>/dev/null || echo 0
+}
+
 echo "Verifying:"
 fail=0
 
-users=$(grep -c "INSERT INTO \"\?auth\"\?\.\"\?users\|COPY auth\.users" "${OUT}/auth.sql" 2>/dev/null || true)
-if [ "${users:-0}" -eq 0 ]; then
-  echo "  auth.sql            NO USER DATA - members would not survive a restore"
-  fail=1
+u=$(rows "${OUT}/auth.sql" "auth.users")
+if [ "$u" -gt 0 ]; then
+  echo "  auth.users              ${u} accounts"
 else
-  echo "  auth.sql            contains auth.users"
+  echo "  auth.users              NO ACCOUNTS - members would not survive a restore"
+  fail=1
 fi
 
-for t in access_entitlements preorders bkash_payments orders; do
-  if grep -q "$t" "${OUT}/data.sql" 2>/dev/null; then
-    echo "  data.sql            contains ${t}"
-  else
-    echo "  data.sql            MISSING ${t}"
-    fail=1
-  fi
+for t in access_entitlements preorders bkash_payments orders discount_codes; do
+  n=$(rows "${OUT}/data.sql" "public.${t}")
+  printf '  public.%-17s %s rows\n' "$t" "$n"
 done
 
-if grep -q "CREATE TABLE" "${OUT}/schema.sql" 2>/dev/null; then
-  echo "  schema.sql          contains table definitions"
+e=$(rows "${OUT}/data.sql" "public.access_entitlements")
+[ "$e" -gt 0 ] || { echo "  access_entitlements is EMPTY - paid access would be lost"; fail=1; }
+
+s=$(rows "${OUT}/data.sql" "private.app_secrets")
+[ "$s" -gt 0 ] || echo "  note: private.app_secrets empty - the Pathao cron secret is not captured"
+
+if grep -q "CREATE POLICY" "${OUT}/schema.sql" 2>/dev/null; then
+  echo "  schema.sql              includes RLS policies"
 else
-  echo "  schema.sql          NO TABLE DEFINITIONS"
+  echo "  schema.sql              NO RLS POLICIES - restoring this would expose every table"
   fail=1
 fi
 
