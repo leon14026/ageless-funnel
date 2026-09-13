@@ -7,6 +7,11 @@ node_modules/
 .env.*
 *.key
 
+# Security notes. A completed audit names this site's weaknesses and the controls
+# that cover them; that belongs in private notes, not in a repo that may later be
+# shared or made public.
+website_cybersecurity_audit_checklist.md
+
 # OS / editor
 .DS_Store
 Thumbs.db
