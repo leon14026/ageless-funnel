@@ -239,10 +239,13 @@
                     .select('*', { count: 'exact', head: true });
                 document.getElementById('stat-entries').textContent = entriesCount || 0;
 
-                // Get orders count
+                // Get orders count. Count an explicit column, not '*': members are
+                // deliberately not granted SELECT on the dispute-evidence columns
+                // (gateway_meta, card_no, risk_level, ...), and '*' expands to those
+                // and fails with "permission denied for column".
                 const { count: ordersCount } = await supabaseClient
                     .from('orders')
-                    .select('*', { count: 'exact', head: true });
+                    .select('id', { count: 'exact', head: true });
                 document.getElementById('stat-orders').textContent = ordersCount || 0;
 
                 // Get completed weeks count
