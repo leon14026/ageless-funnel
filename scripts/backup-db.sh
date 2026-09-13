@@ -43,6 +43,14 @@ SUPABASE="npx --yes supabase"
 echo "Backing up ${PROJECT_REF} -> ${OUT}"
 echo
 
+# One-time setup. Both of these are interactive, so this script has to be run
+# from a terminal you can type into.
+if ! $SUPABASE projects list >/dev/null 2>&1; then
+  echo "Not logged in to the Supabase CLI. Opening browser..."
+  $SUPABASE login
+  echo
+fi
+
 if [ ! -f "supabase/.temp/project-ref" ]; then
   echo "Project not linked yet. Running link (one time)..."
   $SUPABASE link --project-ref "$PROJECT_REF"
