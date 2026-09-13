@@ -15,6 +15,10 @@ backups/
 # that cover them; that belongs in private notes, not in a repo that may later be
 # shared or made public.
 website_cybersecurity_audit_checklist.md
+backup-setup-plan.md
+
+# Portable Postgres client tools, if the backup setup goes that route.
+tools/
 
 # OS / editor
 .DS_Store
