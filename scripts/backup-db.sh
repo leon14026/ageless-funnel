@@ -21,14 +21,32 @@
 #
 # WHAT IS COVERED
 #   public              the application tables
-#   private             app_secrets - the Pathao cron reads pathao_batch_secret
+#   private             structure only - see LIVE CREDENTIALS below
 #   supabase_migrations the migration ledger, so a restored project does not try
 #                       to re-apply every migration from scratch
-#   auth                member accounts (data only; the schema itself is created
-#                       by Supabase when a project is provisioned)
+#   auth                ONLY users, identities and mfa_factors (data only; the
+#                       schema itself is created by Supabase on provisioning)
 # Not covered, deliberately: storage, realtime, vault, net, cron and graphql are
 # Supabase-managed. The two cron JOBS are recreated by the migrations in
 # supabase/migrations, so they come back with the schema.
+#
+# LIVE CREDENTIALS ARE EXCLUDED ON PURPOSE
+# A backup is a file that gets copied around, so it should not carry credentials
+# that work right now. Excluded, with what to do on restore:
+#
+#   auth.refresh_tokens,   live bearer credentials - a leaked dump would let
+#   auth.sessions,         someone log straight in as a member. Members simply
+#   auth.one_time_tokens   log in again after a restore; resend any invite.
+#   public.pathao_tokens   live Pathao API access/refresh tokens. The code
+#                          re-fetches them from PATHAO_CLIENT_ID/SECRET, which
+#                          live in Edge Function secrets, not the database.
+#   private.app_secrets    pathao_batch_secret, in plaintext. Re-insert one row
+#                          and set the matching Edge Function secret.
+#
+# auth.users password hashes ARE kept: they are bcrypt, not directly usable, and
+# they are the member accounts - a backup without them is not a backup. The auth
+# list is a WHITELIST rather than an exclude-list, so a future Supabase release
+# that adds a new token table cannot silently start leaking into the dump.
 #
 # THE PASSWORD
 # Supabase Dashboard > Connect (or /settings/database) - NOT your API keys. It is
@@ -37,10 +55,10 @@
 # beforehand for an unattended run; do not put it anywhere git can see.
 #
 # THE OUTPUT IS SENSITIVE
-# Dumps contain customer emails, phone numbers, addresses, payment records,
-# password hashes and app secrets. backups/ is gitignored. Keep copies off this
-# machine too - a backup that only exists on the laptop it backs up is not a
-# backup.
+# Even with live credentials excluded, dumps still contain customer emails,
+# phone numbers, addresses, payment records and bcrypt password hashes.
+# backups/ is gitignored. Keep copies off this machine too - a backup that only
+# exists on the laptop it backs up is not a backup.
 #
 # TO RESTORE (into a fresh project), apply in this order:
 #   roles.sql  ->  schema.sql  ->  auth.sql  ->  data.sql
@@ -138,10 +156,18 @@ dump() {
 
 # Roles are managed by Supabase and a new project provisions its own, so this is
 # best-effort and must never block the three dumps that matter.
+# Tables whose rows are live credentials. Structure is kept, contents are not.
+NO_DATA=(--exclude-table-data=public.pathao_tokens
+         --exclude-table-data=private.app_secrets)
+
+# Whitelist, not a blacklist: only these auth tables are the accounts themselves.
+# Everything else in auth is sessions, refresh tokens and one-time tokens.
+AUTH_TABLES=(-t auth.users -t auth.identities -t auth.mfa_factors)
+
 dump "roles"           roles.sql  optional "$PG_DUMPALL" "${CONN[@]}" --roles-only
 dump "schema"          schema.sql required "$PG_DUMP" "${CONN[@]}" --schema-only "${SCHEMA_ARGS[@]}"
-dump "app data"        data.sql   required "$PG_DUMP" "${CONN[@]}" --data-only  "${SCHEMA_ARGS[@]}"
-dump "auth (accounts)" auth.sql   required "$PG_DUMP" "${CONN[@]}" --data-only -n auth
+dump "app data"        data.sql   required "$PG_DUMP" "${CONN[@]}" --data-only  "${SCHEMA_ARGS[@]}" "${NO_DATA[@]}"
+dump "auth (accounts)" auth.sql   required "$PG_DUMP" "${CONN[@]}" --data-only "${AUTH_TABLES[@]}"
 
 rm -f "${OUT}/.err"
 echo
@@ -176,8 +202,24 @@ done
 e=$(rows "${OUT}/data.sql" "public.access_entitlements")
 [ "$e" -gt 0 ] || { echo "  access_entitlements is EMPTY - paid access would be lost"; fail=1; }
 
-s=$(rows "${OUT}/data.sql" "private.app_secrets")
-[ "$s" -gt 0 ] || echo "  note: private.app_secrets empty - the Pathao cron secret is not captured"
+i=$(rows "${OUT}/auth.sql" "auth.identities")
+echo "  auth.identities         ${i} rows"
+
+# Guard the exclusions. If a future edit or a Supabase change lets live
+# credentials back into the dump, fail here rather than shipping the file.
+echo
+echo "Checking no live credentials leaked in:"
+for pair in "auth.sql:auth.refresh_tokens" "auth.sql:auth.sessions" \
+            "auth.sql:auth.one_time_tokens" "auth.sql:auth.flow_state" \
+            "data.sql:public.pathao_tokens" "data.sql:private.app_secrets"; do
+  f="${pair%%:*}"; t="${pair#*:}"
+  n=$(rows "${OUT}/${f}" "$t")
+  if [ "$n" -gt 0 ]; then
+    echo "  LEAK: ${t} has ${n} rows in ${f}"
+    fail=1
+  fi
+done
+[ "$fail" -eq 0 ] && echo "  clean - no session, refresh, one-time or API tokens in the dump"
 
 if grep -q "CREATE POLICY" "${OUT}/schema.sql" 2>/dev/null; then
   echo "  schema.sql              includes RLS policies"
