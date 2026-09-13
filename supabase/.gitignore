@@ -1,0 +1,4 @@
+# Written by the Supabase CLI on `link`. pooler-url holds a Postgres
+# connection string, so none of this belongs in git.
+.temp/
+.branches/
